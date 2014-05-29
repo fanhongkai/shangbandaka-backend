@@ -14,7 +14,7 @@ SHANGBANDAKA-BACKEND
 
 ### 关于
 
-项目基于Python的bottle web(http://bottlepy.org)开发框架，前端基于bootstrap(http://getbootstrap.com)构建
+项目基于Python的bottle web开发框架，前端基于bootstrap (http://getbootstrap.com) 构建
 
 ### 安装
 

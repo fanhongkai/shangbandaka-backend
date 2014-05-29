@@ -97,10 +97,38 @@ def manager():
 @route('/api/')
 def api():
     """
-    APP的API接口
-    /api/ (API的README)
+    APP的API接口概述
     """
     return "API"
+
+@route('/api/register')
+def api_register():
+    """
+    APP的注册接口
+
+    所需要的参数
+        mobile: 手机号码
+
+    返回
+        err : 错误代码
+        msg : 提示消息
+        token : 认证Token
+    """
+    return "{'err':0, 'msg':'ok', 'token':'XXXX-AAABBB'}"
+
+@route('/api/checkin')
+def api_checkin():
+    """
+    APP的Checkin接口
+
+    所需要的参数
+        token: 认证Token
+
+    返回
+        err : 错误代码
+        msg : 提示消息
+    """
+    return "{'err':0, 'msg':'ok'}"
 
 
 ######### WEBAPP ROUTERS ###############
@@ -114,6 +142,8 @@ if __name__ == '__main__':
     app.route('/website/', method=['GET','HEAD'])(website)
     app.route('/manager/', method=['GET','HEAD'])(manager)
     app.route('/api/', method=['GET','HEAD'])(api)
+    app.route('/api/register', method=['GET','HEAD'])(api_register)
+    app.route('/api/checkin', method=['GET','HEAD'])(api_checkin)
     try:
         server = MyWSGIRefServer(host="127.0.0.1", port="8080")
         app.run(server=server,reloader=False)

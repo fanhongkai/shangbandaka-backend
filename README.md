@@ -12,11 +12,14 @@ SHANGBANDAKA-BACKEND
 
 ### 安装
 
-1 安装Python (http://python.org)
-2 安装pip (Python的Package管理工具, http://www.pip-installer.org)
-3 通过pip安装bottle (一个轻量级的Python web开发框架, bottlepy.org)
-4 运行python main.py, 在浏览器输入http://localhost:8080 顺利地话即可顺利启动
+* 1 安装Python (http://python.org)
+* 2 安装pip (Python的Package管理工具, http://www.pip-installer.org)
+* 3 通过pip安装bottle (一个轻量级的Python web开发框架, bottlepy.org)
+* 4 运行python main.py, 在浏览器输入http://localhost:8080 顺利地话即可顺利启动
 
+
+### 截图
+![管理系统登录-1](http://raw.githubusercontent.com/NANNING/SHANGBANDAKA-BACKEND/master/assets/screenshots/manager-login.png "管理系统登录")
 
 ### 联系
 项目网站 : http://nanning.github.io

@@ -90,9 +90,25 @@ def manager():
     /manager/ (登陆)
     /manager/report (登录主页)
     /manager/login (提交登录)
-    /manager/register (注册使用)
+    /manager/register/ (注册使用)
     """
     return template(root+"/templates/venderpage/login.tpl",login_status='')
+
+@route('/manager/register/')
+def manager_register():
+    """
+    开通打卡服务
+    """
+    return template(root+"/templates/venderpage/register.tpl",register_status='')
+
+@route('/manager/report/')
+def manager_report():
+    """
+    查看打卡报表
+    """
+    return template(root+"/templates/venderpage/report.tpl",op_status='')
+
+
 
 @route('/api/')
 def api():
@@ -141,6 +157,8 @@ if __name__ == '__main__':
 
     app.route('/website/', method=['GET','HEAD'])(website)
     app.route('/manager/', method=['GET','HEAD'])(manager)
+    app.route('/manager/register/', method=['GET','HEAD'])(manager_register)
+    app.route('/manager/report/', method=['GET','HEAD'])(manager_report)
     app.route('/api/', method=['GET','HEAD'])(api)
     app.route('/api/register', method=['GET','HEAD'])(api_register)
     app.route('/api/checkin', method=['GET','HEAD'])(api_checkin)

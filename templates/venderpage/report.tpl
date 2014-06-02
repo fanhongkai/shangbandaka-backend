@@ -26,21 +26,7 @@
     </div><!-- /.navbar -->
 
     <div class="container main pt-10">
-      <form action="" method="post" class="form-signin" role="form">
-        <h3 class='center ml-not'>企业登录</h3>
-        <span style='color:grey'>用户名:</span><br />
-        <input type="text" name="username" class="form-control" value="" placeholder="用户名"  autofocus autocomplete='off'>
-        
-        <br />
-        <span style='color:grey'>密码:</span><br />
-        <input type="password" name="passwd" class="form-control" value="" placeholder="密码"  autocomplete='off'>
-
-        <br />
-        <span><font color='red'>{{login_status}}</font></span>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" id='vender-login' name="submit" value="submit">登录</button>
-        <br />
-        <span style="color:grey"><a href='/manager/register/'>注册使用</a>  </span>
-      </form>
+     报表 
     </div><!--/.container-->
     <div class="modal js-loading-bar"></div>
 

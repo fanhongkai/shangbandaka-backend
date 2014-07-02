@@ -1,6 +1,3 @@
-SHANGBANDAKA-BACKEND
-====================
-
 [TOC]
 
 ## 上班打卡后台
@@ -24,10 +21,21 @@ SHANGBANDAKA-BACKEND
 * 4 运行python main.py, 在浏览器输入http://localhost:8080 顺利地话即可顺利启动
 
 
-### 截图
-![管理系统登录-1](http://raw.githubusercontent.com/NANNING/SHANGBANDAKA-BACKEND/master/assets/screenshots/manager-login.png "管理系统登录")
+### 设计截图
+- UE流程设计图
+![UE设计](http://raw.githubusercontent.com/NANNING/shangbandaka-backend/master/design/us.png "UE设计")
+
+- 登录界面
+![登录界面](http://raw.githubusercontent.com/NANNING/shangbandaka-backend/master/design/0-login.png "登录界面")
+- 开通打卡服务
+![开通打卡服务](http://raw.githubusercontent.com/NANNING/shangbandaka-backend/master/design/1-register.png "开通打卡服务")
+- 管理系统
+![管理系统](http://raw.githubusercontent.com/NANNING/shangbandaka-backend/master/assets/2-manager.png "管理系统")
+
+
+其他的页面根据上述设计稿所实现的规则灵活处理
 
 ### 联系
-项目网站 : http://nanning.github.io
-
-联系人email : riverfor at gmail.com
+- 项目网站 : http://nanning.github.io
+- 产品经理: riverfor at gmail.com
+- 网站设计师 : [廖炎](https://github.com/liaoyanly)

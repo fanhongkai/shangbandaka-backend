@@ -108,6 +108,13 @@ def manager_report():
     """
     return template(root+"/templates/venderpage/report.tpl",op_status='')
 
+@route('/manager/setting/')
+def manager_setting():
+    """
+    查看打卡报表
+    """
+    return template(root+"/templates/venderpage/report.tpl",op_status='')
+
 
 
 @route('/api/')
@@ -159,6 +166,7 @@ if __name__ == '__main__':
     app.route('/manager/', method=['GET','HEAD'])(manager)
     app.route('/manager/register/', method=['GET','HEAD'])(manager_register)
     app.route('/manager/report/', method=['GET','HEAD'])(manager_report)
+    app.route('/manager/setting/', method=['GET','HEAD'])(manager_setting)
     app.route('/api/', method=['GET','HEAD'])(api)
     app.route('/api/register', method=['GET','HEAD'])(api_register)
     app.route('/api/checkin', method=['GET','HEAD'])(api_checkin)

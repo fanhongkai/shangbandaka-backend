@@ -32,7 +32,7 @@
 ![管理系统](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/2-manager.png "管理系统")
 
 
-其他的页面根据上述设计稿所实现的规则灵活处理
+其他未展示的页面（如部门管理、更改密码等）根据上述设计稿所实现的规则灵活处理
 
 ### 联系
 - 项目网站 : http://nanning.github.io

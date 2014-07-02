@@ -28,6 +28,7 @@
 
 - 开通打卡服务
 ![开通打卡服务](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/1-register.png "开通打卡服务")
+
 - 管理系统
 ![管理系统](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/2-manager.png "管理系统")
 
@@ -37,4 +38,6 @@
 ### 联系
 - 项目网站 : http://nanning.github.io
 - 产品经理: riverfor at gmail.com
+- 项目经理: [冰哥](https://github.com/Airfly)
+- 开发者 : [Chifeng](https://github.com/chifeng)
 - 网站设计师 : [廖炎](https://github.com/liaoyanly)

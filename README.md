@@ -37,7 +37,7 @@
 
 ### 联系
 - 项目网站 : http://nanning.github.io
-- 产品经理: riverfor at gmail.com
+- 产品经理: [River](https://github.com/riverfor) - riverfor at gmail.com
 - 项目经理: [冰哥](https://github.com/Airfly)
 - 开发者 : [Chifeng](https://github.com/chifeng)
 - 网站设计师 : [廖炎](https://github.com/liaoyanly)

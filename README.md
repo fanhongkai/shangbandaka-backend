@@ -1,5 +1,3 @@
-[TOC]
-
 ## 上班打卡后台
 
 
@@ -23,14 +21,15 @@
 
 ### 设计截图
 - UE流程设计图
-![UE设计](https://raw.githubusercontent.com/NANNING/shangbandaka-backend/master/design/us.png "UE设计")
+![UE设计](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/ue.png "UE设计")
 
 - 登录界面
-![登录界面](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/0-login.png "登录界面")
+![登录界面](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/0-login.jpg "登录界面")
+
 - 开通打卡服务
 ![开通打卡服务](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/1-register.png "开通打卡服务")
 - 管理系统
-![管理系统](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/assets/2-manager.png "管理系统")
+![管理系统](https://raw.githubusercontent.com/NANNING/Shangbandaka-backend/master/design/2-manager.png "管理系统")
 
 
 其他的页面根据上述设计稿所实现的规则灵活处理

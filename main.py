@@ -10,7 +10,8 @@
 """
 import os
 from bottle import Bottle, ServerAdapter
-from bottle import run, debug, route, error, static_file, template,request
+from bottle import run, debug, route, error, static_file, template,request,response
+from json import dumps
 
 root = os.path.dirname(os.path.abspath(__file__))
 
@@ -151,8 +152,9 @@ def api_register():
 
     #debug
     print (company_code,department,name,number,phoneid)
+    response.content_type = 'application/json'
 
-    return "{'err':0, 'msg':'ok', 'token':'XXXX-AAABBB'}"
+    return dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
 
 @route('/api/checkin')
 def api_checkin():
@@ -178,7 +180,8 @@ def api_checkin():
     print (lat,lng,token,phoneid)
 
 
-    return "{'err':0, 'msg':'ok'}"
+    response.content_type = 'application/json'
+    return dumps({"err":"0", "msg":"ok"})
 
 
 ######### WEBAPP ROUTERS ###############

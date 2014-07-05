@@ -136,7 +136,22 @@ def api_register():
         err : 错误代码
         msg : 提示消息
         token : 认证Token
+
+    1 验证数据
+    2 保存数据
+    3 生成token
+    4 返回
+
     """
+    company_code = request.POST.get('company_code', '').strip()
+    department = request.POST.get('department', '').strip()
+    name = request.POST.get('name', '').strip()
+    number = request.POST.get('number', '').strip()
+    phoneid = request.POST.get('phoneid','').strip()
+
+    #debug
+    print (company_code,department,name,number,phoneid)
+
     return "{'err':0, 'msg':'ok', 'token':'XXXX-AAABBB'}"
 
 @route('/api/checkin')
@@ -150,7 +165,19 @@ def api_checkin():
     返回
         err : 错误代码
         msg : 提示消息
+
+    1 验证数据
+    2 保存数据
+    3 返回提示
     """
+    lat = request.POST.get('lat','').strip() #纬度
+    lng = request.POST.get('lng','').strip() #经度
+    token = request.POST.get('token','').strip()
+    phoneid = request.POST.get('phoneid','').strip()
+    #debug
+    print (lat,lng,token,phoneid)
+
+
     return "{'err':0, 'msg':'ok'}"
 
 

@@ -57,7 +57,7 @@
     </div><!--/.container-->
 
 
-    <hr class="half-rule" />
+    <hr class="half-rule" style='padding:0px 40px;'/>
     <p class="muted credit grey" style='padding-left:40px;color:grey'>Copyright © <a href='https://github.com/NANNING'>NANNING</a> 2013-2014. All rights reserved.
         <span class="right"></span>
     </p>

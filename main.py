@@ -10,7 +10,7 @@
 """
 import os
 from bottle import Bottle, ServerAdapter
-from bottle import run, debug, route, error, static_file, template
+from bottle import run, debug, route, error, static_file, template,request
 
 root = os.path.dirname(os.path.abspath(__file__))
 
@@ -195,10 +195,10 @@ if __name__ == '__main__':
     app.route('/manager/report/', method=['GET','HEAD'])(manager_report)
     app.route('/manager/setting/', method=['GET','HEAD'])(manager_setting)
     app.route('/api/', method=['GET','HEAD'])(api)
-    app.route('/api/register', method=['GET','HEAD'])(api_register)
-    app.route('/api/checkin', method=['GET','HEAD'])(api_checkin)
+    app.route('/api/register', method=['GET','POST','HEAD'])(api_register)
+    app.route('/api/checkin', method=['GET','POST','HEAD'])(api_checkin)
     try:
-        server = MyWSGIRefServer(host="127.0.0.1", port="8080")
+        server = MyWSGIRefServer(host="0.0.0.0", port="8080")
         app.run(server=server,reloader=False)
     except Exception,ex:
         print "Exception: %s" % repr(ex)

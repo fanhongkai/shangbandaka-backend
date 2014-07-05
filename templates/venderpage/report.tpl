@@ -25,8 +25,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" style='padding:15px 10px;margin-left:0px' href="javascript:milib.close()"><!--span class="glyphicon glyphicon-th-large"></span--><img src='/assets/static/img/logo.png' /></a>
-          <a class="navbar-brand" style='padding:15px 15px 15px 5px;margin-left:0px;font-size:20px' href="#">上班打卡</a>
+          <a class="navbar-brand" style='padding:15px 10px;margin-left:0px' href="/manager/report/"><!--span class="glyphicon glyphicon-th-large"></span--><img src='/assets/static/img/logo.png' /></a>
+          <a class="navbar-brand" style='padding:15px 15px 15px 5px;margin-left:0px;font-size:20px' href="/manager/report/">上班打卡</a>
         </div>
 
         <div class="navbar-collapse collapse">
@@ -132,12 +132,20 @@
             </div>
           </div>
 
+          <br />
+          <br />
+          <hr class="half-rule" />
+          <div class='footer'>
+            <p class="muted credit grey center" style='color:grey'>Copyright © <a href='https://github.com/NANNING'>NANNING</a> 2013-2014. All rights reserved.
+                <span class="right"></span>
+            </p>
+          </div>
         </div>
       </div>
+    
     </div>
 
-
-    <div class="container main pt-10"></div><!--/.container-->
+    
 
     <div class="modal js-loading-bar"></div>
 

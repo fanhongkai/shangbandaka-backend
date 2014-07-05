@@ -113,7 +113,7 @@ def manager_setting():
     """
     查看打卡报表
     """
-    return template(root+"/templates/venderpage/report.tpl",op_status='')
+    return template(root+"/templates/venderpage/setting.tpl",op_status='')
 
 
 

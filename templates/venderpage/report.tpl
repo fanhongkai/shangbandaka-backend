@@ -31,10 +31,9 @@
 
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">管理</a></li>
-            <li><a href="#">设置</a></li>
-            <li><a href="#">帮助</a></li>
+            <li><a href="/manager/setting/">设置</a></li>
             <li><a href="#">注销</a></li>
+            <li><a href="/manager/help/">帮助</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="员工姓名">
@@ -53,7 +52,7 @@
             <li><a href="#">市场</a></li>
             <li><a href="#">销售</a></li>
             <li><a href="#">&nbsp;</a></li>
-            <li><a href="#">添加部门</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
           </ul>
 
         </div>

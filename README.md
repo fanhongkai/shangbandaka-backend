@@ -39,7 +39,7 @@
 
 #### 验证 IMEI 
 
-/api/re_imei 通过员工id查询绑定手机的imei串
+/api/reimei 通过员工id查询绑定手机的imei串
 
 @parameters: id=<员工id>
 

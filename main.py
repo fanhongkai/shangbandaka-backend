@@ -156,7 +156,7 @@ def api_register():
 
     return dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
 
-def re_imei():
+def reimei():
     return dumps({"errno":"0", "msg":"990000552011100"})
     #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
 
@@ -205,7 +205,7 @@ if __name__ == '__main__':
     app.route('/api/register', method=['GET','POST','HEAD'])(api_register)
     app.route('/api/checkin', method=['GET','POST','HEAD'])(api_checkin)
 
-    app.route('/api/re_imei', method=['GET','POST','HEAD'])(re_imei)
+    app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
     try:
         server = MyWSGIRefServer(host="0.0.0.0", port="8080")
         app.run(server=server,reloader=False)

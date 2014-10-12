@@ -35,6 +35,21 @@
 
 其他未展示的页面（如部门管理、更改密码等）根据上述设计稿所实现的规则灵活处理
 
+### API for .net backend
+
+#### 验证 IMEI 
+
+/api/re_imei
+
+@parameters: id=<员工id>
+
+@return 
+{
+"errno": int <错误代码>, 
+"msg": imei串或者错误信息
+}
+
+
 ### 联系
 - 项目网站 : http://nanning.github.io
 - 产品经理: [River](https://github.com/riverfor) - riverfor at gmail.com

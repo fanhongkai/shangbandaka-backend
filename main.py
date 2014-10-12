@@ -39,23 +39,19 @@ class MyWSGIRefServer(ServerAdapter):
 
 
 ######### BUILT-IN ROUTERS ###############
-@route('/__exit', method=['GET','HEAD'])
 def __exit():
     global server
     server.stop()
 
-@route('/__ping')
 def __ping():
     return "ok"
 
 
-@route('/assets/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root=root+"/assets")
 
 
 ######### WEBAPP ROUTERS ###############
-@route('/')
 def home():
     """
     开发模式，展示网站部分的3个模块的入口
@@ -72,7 +68,6 @@ def home():
 <li><a href="/api/">API说明</a></li></ul>""", name='上班打卡')
 
 ######### MAIN WEBAPP ROUTERS ###############
-@route('/website/')
 def website():
     """
     APP的官方网站，
@@ -84,7 +79,6 @@ def website():
     return "APP官方网站"
 
 
-@route('/manager/')
 def manager():
     """
     APP的后台管理系统
@@ -95,21 +89,18 @@ def manager():
     """
     return template(root+"/templates/venderpage/login.tpl",login_status='')
 
-@route('/manager/register/')
 def manager_register():
     """
     开通打卡服务
     """
     return template(root+"/templates/venderpage/register.tpl",register_status='')
 
-@route('/manager/report/')
 def manager_report():
     """
     查看打卡报表
     """
     return template(root+"/templates/venderpage/report.tpl",op_status='')
 
-@route('/manager/setting/')
 def manager_setting():
     """
     查看打卡报表
@@ -118,14 +109,12 @@ def manager_setting():
 
 
 
-@route('/api/')
 def api():
     """
     APP的API接口概述
     """
     return "API"
 
-@route('/api/register')
 def api_register():
     """
     APP的注册接口
@@ -158,15 +147,14 @@ def api_register():
 
 def mlogin():
     response.content_type = 'application/json'
-    #return dumps({"errno":"0", "msg":"", "ret": {"id":10001, "token":"a234dsaz"}})
-    return dumps({"errno":"1", "msg":"Fail to login, please check your username or password", "ret": {}})
+    return dumps({"errno":"0", "msg":"", "ret": {"id":10001, "token":"a234dsaz"}})
+    #return dumps({"errno":"1", "msg":"Fail to login, please check your username or password", "ret": {}})
 
 def reimei():
     response.content_type = 'application/json'
     return dumps({"errno":"0", "msg":"990000552011100"})
     #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
 
-@route('/api/checkin')
 def api_checkin():
     """
     APP的Checkin接口

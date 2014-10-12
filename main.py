@@ -214,7 +214,7 @@ if __name__ == '__main__':
     app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
     app.route('/api/mlogin', method=['GET','POST','HEAD'])(mlogin)
     try:
-        server = MyWSGIRefServer(host="0.0.0.0", port="8080")
+        server = MyWSGIRefServer(host="0.0.0.0", port="18080")
         app.run(server=server,reloader=False)
     except Exception,ex:
         print "Exception: %s" % repr(ex)

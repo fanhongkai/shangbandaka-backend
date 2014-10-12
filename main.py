@@ -156,7 +156,13 @@ def api_register():
 
     return dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
 
+def mlogin():
+    response.content_type = 'application/json'
+    #return dumps({"errno":"0", "msg":"", "ret": {"id":10001, "token":"a234dsaz"}})
+    return dumps({"errno":"1", "msg":"Fail to login, please check your username or password", "ret": {}})
+
 def reimei():
+    response.content_type = 'application/json'
     return dumps({"errno":"0", "msg":"990000552011100"})
     #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
 
@@ -206,6 +212,7 @@ if __name__ == '__main__':
     app.route('/api/checkin', method=['GET','POST','HEAD'])(api_checkin)
 
     app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
+    app.route('/api/mlogin', method=['GET','POST','HEAD'])(mlogin)
     try:
         server = MyWSGIRefServer(host="0.0.0.0", port="8080")
         app.run(server=server,reloader=False)

@@ -49,6 +49,23 @@
 "msg": imei串或者错误信息
 }
 
+#### 登录
+
+/api/mlogin 通过员工id查询绑定手机的imei串
+
+@parameters: name=<username>,pwd=<password>
+
+@return 
+{
+"errno": int <错误代码>, 
+"msg": string <提示消息>
+"ret": {
+    "id":"用户id",
+    "token":"<登录成功后后台生成的token验证串>"
+    }
+}
+
+
 
 ### 联系
 - 项目网站 : http://nanning.github.io

@@ -152,9 +152,15 @@ def mlogin():
 
 def reimei():
     response.content_type = 'application/json'
-    return dumps({"errno":"0", "msg":"990000552011100"})
+    return dumps({"errno":"0", "msg":"99000055201110"})
     #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
-
+def initimei():
+	response.content_type='application/json'
+	return dumps({"errno":"0","msg":"OK"})
+def getuserdata():
+	response.content_type='application/json'
+	return dumps({"errno":"0","ret":{"Id":100000,"LoginName":"admin","LoginPwd":"123456","CompanyId":1,"Department":1,"Phone":"18076598729"}})
+	
 def api_checkin():
     """
     APP的Checkin接口
@@ -201,6 +207,12 @@ if __name__ == '__main__':
 
     app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
     app.route('/api/mlogin', method=['GET','POST','HEAD'])(mlogin)
+    app.route('/api/initimei', method=['GET','POST','HEAD'])(initimei)
+    app.route('/api/getuserdata', method=['GET','POST','HEAD'])(getuserdata)
+    
+
+	
+	
     try:
         server = MyWSGIRefServer(host="0.0.0.0", port="18080")
         app.run(server=server,reloader=False)

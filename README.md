@@ -65,7 +65,29 @@
     }
 }
 
+#### 请假请求
 
+/api/reqingjia 通过员工id和公司id
+
+@parameters: id 员工id  cid 公司id Start开始时间 end结束时间 reason 原因
+
+@return 
+{
+"errno": int <错误代码>, 
+"msg": string <提示消息>
+
+}
+
+### 签到
+/api/redaka  通过员工id和公司id
+@parameters: id 员工id  cid 公司id lat 纬度 lon经度
+
+@return 
+{
+"errno": int <错误代码>, 
+"msg": string <提示消息>
+
+}
 
 ### 联系
 - 项目网站 : http://nanning.github.io

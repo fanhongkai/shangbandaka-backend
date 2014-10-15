@@ -160,15 +160,7 @@ def initimei():
 def getuserdata():
 	response.content_type='application/json'
 	return dumps({"errno":"0","ret":{"Id":100000,"LoginName":"admin","LoginPwd":"123456","CompanyId":1,"Department":1,"Phone":"18076598729"}})
-def reqingjia():
-	response.content_type='application/json'
-    return dumps({"errno":"0","msg":"提交成功"})
-    
-def redaka():
-    response.content_type='application/json'
-    return dumps({"erron":"0" ,"msg":"晚起的虫儿被鸟吃，今天是NO.1 保持记录哦","rank"="1"})
-        
-    
+	
 def api_checkin():
     """
     APP的Checkin接口
@@ -217,8 +209,6 @@ if __name__ == '__main__':
     app.route('/api/mlogin', method=['GET','POST','HEAD'])(mlogin)
     app.route('/api/initimei', method=['GET','POST','HEAD'])(initimei)
     app.route('/api/getuserdata', method=['GET','POST','HEAD'])(getuserdata)
-    app.route('/api/redaka',method=['GET','POST','HEAD'])(redaka)
-    app.route('/api/reqingjia',method=['GET','POST','HEAD'])(reqingjia)
     
 
 	

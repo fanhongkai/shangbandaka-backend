@@ -9,14 +9,66 @@
         3) 与APP的API接口
 """
 import os
+import md5
+import bottle
 from bottle import Bottle, ServerAdapter
-from bottle import run, debug, route, error, static_file, template,request,response
+from bottle import run, debug, route, error, static_file, template,request,response,redirect
 from json import dumps
+from models import CompanyInfo,DepartmentInfo,EmployeesInfo,ManagerInfo,SignSetInfo,RegistrationInfo,LeaveInfo,create_tables,init_tables
+import time
+import sys
+
+from beaker.middleware import SessionMiddleware
+
+
 
 root = os.path.dirname(os.path.abspath(__file__))
+if sys.platform == 'darwin':
+    temp = os.getenv('IOSTMP')
+    if temp=='' or temp==None:
+        temp = root+'/tmp/'
+else:
+    temp = root+'/tmp/'
+
+if not os.path.exists(temp): 
+    os.makedirs(temp)
+
+session_root = root+"/session/"
+if not os.path.exists(session_root):
+    os.makedirs(session_root)
+
+session_opts = {
+    'session.type': 'file',
+    'session.data_dir': session_root,
+    'session.cookie_expires':86400,
+    'session.auto': True,
+}
 
 ######### QPYTHON WEB SERVER ###############
+#定义token文件
+def check_token():
+    token_file=temp+'/.token.json'
+    if os.path.exists(token_file):
+        line=file.read(open(token_file))
+        json_line=json.loads(line)
+        token=json_line['token']
+        if len(line)>0:
+            return token
+        else:
+            return False
+    else:
+        return False
+#将token数据存到文件中
+def save_token_file(data):
+    f=open(temp+'/.token.json','w')
+    f.write(data)
+    f.close()
 
+def save_referer_file(referer):
+    f=open(temp+'/.referer.txt')
+    f.write(referer)
+    f.close()
+    
 class MyWSGIRefServer(ServerAdapter):
     server = None
 
@@ -89,12 +141,65 @@ def manager():
     """
     return template(root+"/templates/venderpage/login.tpl",login_status='')
 
-def manager_register():
-    """
-    开通打卡服务
-    """
-    return template(root+"/templates/venderpage/register.tpl",register_status='')
+def manager_login():
+    """登录 """
+    form=request.forms
+    if form.submit:
+        if form.username and form.passwd:
+            Company = CompanyInfo.getOne(loginName=form.username)#查询（根据用户名查询密码）
+            pass_data = Company.loginPwd.decode('string-escape')       
+            passwd_md5 = md5.new(form.passwd).hexdigest()#md5加密，32位
+            
+            if pass_data == passwd_md5.strip():#strip()去除空格
+                #登录成功,将用户信息保存到Session 
+                app_session = bottle.request.environ.get('beaker.session')
+                app_session["company"]=str(Company.c_Id)#保存公司编号
+                redirect("/manager/report/")
+                
+            else:
+                return template(root+"/templates/venderpage/login.tpl",login_status = "用户名或密码错误")
 
+        else:
+            return template(root+"/templates/venderpage/login.tpl",login_status = '用户名、密码不能为空')
+    else:       
+       
+        return template(root+"/templates/venderpage/login.tpl",login_status='')
+        
+def manager_register():    
+    """
+    开通打卡服务(注册)
+    """
+    form = request.forms
+    if form.submit:
+        upload = request.files.get('upload')
+        #name, ext = os.path.splitext(upload.filename)
+        fileExt=upload.filename.split('.')[-1] #获取文件后缀
+        fileExt=upload.filename.split('.')[0] #获取文件名
+        save_path = temp+"/Upload" #指定路径
+        fileType='png,jpg,jpeg'
+        if fileExt in fileType:            
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            file_path = "{path}/{file}".format(path=save_path, file=upload.filename)
+            with open(file_path,'wb') as open_file:
+                open_file.write(upload.file.read()) #保存文件
+                #---------实例化数据 -----------
+                Company=CompanyInfo()
+                company.loginName=form.username
+                company.loginPwd=form.passwd
+                company.companyName=form.company_name
+                company.Number=int(form.company_number)
+                company.Legal=form.company_contact
+                company.RegistrationNum=str(datatime.datatime.now())+form.company_name
+                company.CompanyPhone=form.company_phone
+                company.CompanyEmail=form.company_email
+                company.StatusId=True
+                company.save(force_insert=True) #主键递增
+
+        else:
+            return template(root+"/templates/venderpage/register.tpl",register_status='请选择png,jpg,jpeg文件')
+    else:   
+        return template(root+"/templates/venderpage/register.tpl",register_status='')
 def manager_report():
     """
     查看打卡报表
@@ -155,12 +260,12 @@ def reimei():
     return dumps({"errno":"0", "msg":"99000055201110"})
     #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
 def initimei():
-	response.content_type='application/json'
-	return dumps({"errno":"0","msg":"OK"})
+    response.content_type='application/json'
+    return dumps({"errno":"0","msg":"OK"})
 def getuserdata():
-	response.content_type='application/json'
-	return dumps({"errno":"0","ret":{"Id":100000,"LoginName":"admin","LoginPwd":"123456","CompanyId":1,"Department":1,"Phone":"18076598729"}})
-	
+    response.content_type='application/json'
+    return dumps({"errno":"0","ret":{"Id":100000,"LoginName":"admin","LoginPwd":"123456","CompanyId":1,"Department":1,"Phone":"18076598729"}})
+
 def api_checkin():
     """
     APP的Checkin接口
@@ -191,6 +296,8 @@ def api_checkin():
 ######### WEBAPP ROUTERS ###############
 if __name__ == '__main__':
     app = Bottle()
+
+
     app.route('/', method='GET')(home)
     app.route('/__exit', method=['GET','HEAD'])(__exit)
     app.route('/__ping', method=['GET','HEAD'])(__ping)
@@ -198,7 +305,9 @@ if __name__ == '__main__':
 
     app.route('/website/', method=['GET','HEAD'])(website)
     app.route('/manager/', method=['GET','HEAD'])(manager)
-    app.route('/manager/register/', method=['GET','HEAD'])(manager_register)
+
+    app.route('/manager/login/', method=['GET','POST'])(manager_login)
+    app.route('/manager/register/', method=['GET','POST'])(manager_register)
     app.route('/manager/report/', method=['GET','HEAD'])(manager_report)
     app.route('/manager/setting/', method=['GET','HEAD'])(manager_setting)
     app.route('/api/', method=['GET','HEAD'])(api)
@@ -210,11 +319,13 @@ if __name__ == '__main__':
     app.route('/api/initimei', method=['GET','POST','HEAD'])(initimei)
     app.route('/api/getuserdata', method=['GET','POST','HEAD'])(getuserdata)
     
+    app_with_session = SessionMiddleware(app, session_opts)
 
-	
-	
+
+
     try:
-        server = MyWSGIRefServer(host="0.0.0.0", port="18080")
-        app.run(server=server,reloader=False)
+        #server = MyWSGIRefServer(host="127.0.0.1", port="18080")
+        server=MyWSGIRefServer(host="0.0.0.0",port="18080")
+        bottle.run(server=server,reloader=False,app=app_with_session)
     except Exception,ex:
         print "Exception: %s" % repr(ex)

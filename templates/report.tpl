@@ -15,33 +15,14 @@
     <link href="/assets/static/dashboard.css" rel="stylesheet">
 
   </head>
+  <style type="text/css">
+    .navbar-inverse .navbar-nav>.regist>a, .navbar-inverse .navbar-nav>.regist>a:hover, .navbar-inverse .navbar-nav>.regist>a:focus {
+       color: #fff;
+       background-color: #080808;
+    }
+  </style>
   <body style='padding-top:60px'>
-    <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" style='padding:15px 10px;margin-left:0px' href="/manager/report/"><!--span class="glyphicon glyphicon-th-large"></span--><img src='/assets/static/img/logo.png' /></a>
-          <a class="navbar-brand" style='padding:15px 15px 15px 5px;margin-left:0px;font-size:20px' href="/manager/report/">上班打卡</a>
-        </div>
-
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/manager/setting/">设置</a></li>
-            <li><a href="#">注销</a></li>
-            <li><a href="/manager/help/">帮助</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="员工姓名">
-          </form>
-        </div>
-
-      </div><!-- /.container -->
-    </div><!-- /.navbar -->
+    % include(templatedir+"Master/_userlayout.tpl") 
 
     <div class="container-fluid">
       <div class="row">
@@ -57,7 +38,7 @@
 
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">趣味无限有限公司</h1>
+          <h1 class="page-header">{{companyName}}</h1>
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
@@ -85,40 +66,24 @@
                   <th>位置</th>
                   <th>姓名</th>
                   <th>职务</th>
-                  <th>时间</th>
-                  <th>Email</th>
+                  <th>出勤情况</th>
+                  <th>时间</th>   
+                  <th>操作</th>               
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><span class="glyphicon glyphicon-home"></span></td>
-                  <td>李援美</td>
-                  <td>产品经理</td>
-                  <td>9:00</td>
-                  <td>yuanmei@quwei.com</td>
-                </tr>
-                <tr>
-                  <td><span class="glyphicon glyphicon-map-marker"></span></td>
-                  <td>王康</td>
-                  <td>工程师</td>
-                  <td>8:59</td>
-                  <td>wangkang@quwei.com</td>
-                </tr>
-                <tr>
-                  <td><span class="glyphicon glyphicon-map-marker"></span></td>
-                  <td>周洲</td>
-                  <td>设计师</td>
-                  <td>10:00</td>
-                  <td>zhouzhou@quwei.com</td>
-                </tr>
-                <tr>
-                  <td><span style='color:grey'>请假</span></td>
-                  <td>李跃</td>
-                  <td>工程师</td>
-                  <td>10:00</td>
-                  <td>liyue@quwei.com</td>
-                </tr>
-
+              <tbody>                
+                    %for d in data:
+                        <tr>
+                          <td>{{ d['location'] }}</td>
+                          <td>{{ d['em_name'] }}</td>
+                          <td>{{ d['em_Position']}}</td>
+                          <td>{{ d['WorkStatus'] }}</td>                          
+                          <td>{{ d['SingTime'] }}</td>
+                          <td>
+                            <button type="button" class="btn">删除</button>
+                          </td>
+                        </tr>
+                    %end
               </tbody>
             </table>
           </div>

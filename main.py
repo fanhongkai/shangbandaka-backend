@@ -269,9 +269,7 @@ def edi_department(Id,showDetail):
             redirect("/manager/listdepartment/")
 
         return template(root+"/templates/edi_depart.tpl",showDetail=True,data=data,templatedir=root+'/templates/',companyName=companyName)
-
-
-        
+       
     else:
         form = request.forms
         if form.submit:
@@ -289,7 +287,11 @@ def edi_department(Id,showDetail):
 def del_department(Id):
     """删除部门"""
     #返回JSON对象
-    print 'aa'
+
+    print 'come in'
+    d = DepartmentInfo.get(Id=Id)
+    d.delete_instance()
+    print 'Success'
     
 
 
@@ -306,16 +308,18 @@ def manager_listEmployees():
     for item in get_em:
         base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
         get_depart = DepartmentInfo.select().where(DepartmentInfo.Id == item.Department)
+        base['department'] = ''
         for depar in get_depart:
-            base['department'] = depar.Name
-            data.append(base)
+            if not depar.Name == '':
+                base['department'] = depar.Name
+        data.append(base)
+            
     return template(root+"/templates/listEmployess.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def edi_employees(Id,showDetail):
     """
     员工的添加与编辑
     """
-
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
@@ -324,13 +328,14 @@ def edi_employees(Id,showDetail):
         data_employ = EmployeesInfo.filter(EmployeesInfo.Company==companyId and EmployeesInfo.Id==Id)
         for item in data_employ:
             data = {"Id":item.Id,"Name":item.Name,"Department":item.Department,"Sex":item.Sex,"IdCard":item.IdCard,"Phone":item.Phone,"Email":item.Email,"Position":item.Position}
+        
         form = request.forms
         res_dic = []
+        if form.submit:                        
+            EmployeesInfo.update(Name=form.Name,Sex=form.Sex,IdCard=form.IdCard,Phone=form.Phone,Email=form.Email,Position=form.Position).where(EmployeesInfo.Id==int(Id)).execute()
+            redirect("/manager/listemployees/")
 
-        if form.submit:
-            EmployeesInfo.update(Name=form.Name,Department=form.Department,Sex=form.Sex,IdCard=form.IdCard,Phone=form.Phone,Email=form.Email,Position=form.Position).where(EmployeesInfo.Id==Id).execute()
-            redirect("/manager/listEmployess/")
-        return template(root+"/templates/edi_employees.tpl",showDetail=True,templatedir=root+'/templates/',data=data,companyName=companyName)
+        return template(root+"/templates/edi_employees.tpl",showDetail= True,templatedir=root+'/templates/',data=data,companyName=companyName)
     else:
         form = request.forms
         if form.submit:
@@ -344,6 +349,7 @@ def edi_employees(Id,showDetail):
             employe.save(force_insert=True)
             redirect("/manager/listEmployess/")
 
+        return template(root+"/templates/edi_employees.tpl",showDetail= False,templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def del_employees(Id):
     """

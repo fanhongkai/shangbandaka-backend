@@ -57,7 +57,12 @@
                         <tr>
                           <td>{{ d['Name'] }}</td>
                           <td>{{ d['Sex'] }}</td>
-                          <td>{{ d['department']}}</td>
+                          %if d['department']=='':
+                              <td>-</td>
+                          %else:
+                              <td>{{ d['department']}}</td>
+                          %end
+                          
                           <td>{{ d['Position'] }}</td>                          
                           <td>{{ d['Phone'] }}</td>
                           <td>{{ d['Email'] }}</td>
@@ -70,16 +75,14 @@
               </tbody>
             </table>
           </div>
-
           <div style='text-align:center;margin:0px auto'>
             <div class="btn-group">
-            <button type="button" class="btn btn-default">1</button>
-            <button type="button" class="btn btn-default">2</button>
-            <button type="button" class="btn btn-default">3</button>
-            <button type="button" class="btn btn-default">4</button>
+            <button type="button" class="btn btn-default"><<</button>
+            <button type="button" class="btn btn-default"><</button>
+            <button type="button" class="btn btn-default">></button>
+            <button type="button" class="btn btn-default">>></button>
             </div>
           </div>
-
           <br />
           <br />
           <hr class="half-rule" />

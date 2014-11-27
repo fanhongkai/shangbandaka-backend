@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="/assets/static/favicon.ico">
-    <title>…œ∞‡¥Úø®(π‹¿ÌœµÕ≥)</title>
+    <title>‰∏äÁè≠ÊâìÂç°(ÁÆ°ÁêÜÁ≥ªÁªü)</title>
     <!-- Bootstrap core CSS -->
     <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
@@ -28,12 +28,12 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">»´≤ø</a></li>
-            <li><a href="#">ø™∑¢</a></li>
-            <li><a href="#"> –≥°</a></li>
-            <li><a href="#">œ˙ €</a></li>
-            <li><a href="/manager/listDepartment/">≤ø√≈</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> ÃÌº”≤ø√≈</a></li>
+            <li class="active"><a href="#">ÂÖ®ÈÉ®</a></li>
+            <li><a href="#">ÂºÄÂèë</a></li>
+            <li><a href="#">Â∏ÇÂú∫</a></li>
+            <li><a href="#">ÈîÄÂîÆ</a></li>
+            <li><a href="/manager/listDepartment/">ÈÉ®Èó®</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Ê∑ªÂä†ÈÉ®Èó®</a></li>
           </ul>
 
         </div>
@@ -43,28 +43,33 @@
               %if showDetail:
                 <form action="/manager/ediemployees/{{data['Id']}}/true/" method="post" role="form">
                 <div class="form-item">
-                    <label for="name">–’√˚</label>
+                    <label for="name">ÂßìÂêç</label>
                     <div> 
-                        <input type="text" value="{{data['Name']}}" name="Name" Id="d_Name"/>
+                        <input type="text" value="{{data['Name']}}" name="Name" Id="Name"/>
                     </div>           
                 </div>  
                 <br/>
                 <div class="form-item">
-                    <label for="name">–‘±</label>
+                    <label for="name">ÊÄßÂà´</label>
                     <div> 
-                        <input type="select" value="{{data['Sex']}}" name="Sex" Id="Sex"/>
+                        <select value="{{data['Sex']}}" name="Sex" Id="Sex" style="width:170px;">
+                          <option Value="Áî∑">Áî∑</option>
+                          <option Value="Â•≥">Â•≥</option>
+
+                        </select>
                     </div>           
                 </div>
-                <br/>
+                <br/>                
+
                 <div class="form-item">
-                    <label for="name">…Ì∑›÷§∫≈</label>
+                    <label for="name">Ë∫´‰ªΩËØÅ</label>
                     <div> 
                         <input type="text" value="{{data['IdCard']}}" name="IdCard" Id="IdCard"/>
                     </div>           
                 </div>
                 <br/>
                 <div class="form-item">
-                    <label for="name">µÁª∞</label>
+                    <label for="name">ÁîµËØù</label>
                     <div> 
                         <input type="text" value="{{data['Phone']}}" name="Phone" Id="Phone"/>
                     </div>           
@@ -78,7 +83,7 @@
                 </div>
                 <br/>
                 <div class="form-item">
-                    <label for="name">÷∞ŒÒ</label>
+                    <label for="name">ËÅåÂä°</label>
                     <div> 
                         <input type="text" value="{{data['Position']}}" name="Position" Id="Position"/>
                     </div>           
@@ -86,8 +91,8 @@
                 <br />
                   <br />
                   <div>
-                      <input type="submit" class="btn btn-primary" name="submit" id="but_save" onclick="return check()" value="»∑»œ"/>&nbsp
-                      <button type="reset" class="btn btn-primary" name="cancel" onclick="javascript:history.back()">»°&nbsp œ˚</button>&nbsp
+                      <input type="submit" class="btn btn-primary" name="submit" id="but_save" onclick="return check()" value="Á°ÆËÆ§"/>&nbsp
+                      <button type="reset" class="btn btn-primary" name="cancel" onclick="javascript:history.back()">ÂèñÊ∂à</button>&nbsp
                   </div>
                   <hr class="half-rule" />
                   <div class='footer'>
@@ -99,28 +104,28 @@
               %else:
                 <form action="/manager/ediemployees/{{data['Id']}}/true/" method="post" role="form">
                 <div class="form-item">
-                    <label for="name">–’√˚</label>
+                    <label for="name">ÂßìÂêç</label>
                     <div> 
                         <input type="text" value="" name="Name" Id="d_Name"/>
                     </div>           
                 </div>  
                 <br/>
                 <div class="form-item">
-                    <label for="name">–‘±</label>
+                    <label for="name">ÊÄßÂà´</label>
                     <div> 
                         <input type="select" value="" name="Sex" Id="Sex"/>
                     </div>           
                 </div>
                 <br/>
                 <div class="form-item">
-                    <label for="name">…Ì∑›÷§∫≈</label>
+                    <label for="name">Ë∫´‰ªΩËØÅ</label>
                     <div> 
                         <input type="text" value="" name="IdCard" Id="IdCard"/>
                     </div>           
                 </div>
                 <br/>
                 <div class="form-item">
-                    <label for="name">µÁª∞</label>
+                    <label for="name">ÁîµËØù</label>
                     <div> 
                         <input type="text" value="" name="Phone" Id="Phone"/>
                     </div>           
@@ -134,7 +139,7 @@
                 </div>
                 <br/>
                 <div class="form-item">
-                    <label for="name">÷∞ŒÒ</label>
+                    <label for="name">ËÅåÂä°</label>
                     <div> 
                         <input type="text" value="" name="Position" Id="Position"/>
                     </div>           
@@ -142,8 +147,8 @@
                 <br />
                   <br />
                   <div>
-                      <input type="submit" class="btn btn-primary" name="submit" id="but_save" onclick="return check()" value="»∑»œ"/>&nbsp
-                      <button type="reset" class="btn btn-primary" name="cancel" onclick="javascript:history.back()">»°&nbsp œ˚</button>&nbsp
+                      <input type="submit" class="btn btn-primary" name="submit" id="but_save" onclick="return check()" value="»∑??"/>&nbsp
+                      <button type="reset" class="btn btn-primary" name="cancel" onclick="javascript:history.back()">Á°ÆËÆ§</button>&nbsp
                   </div>
                   <hr class="half-rule" />
                   <div class='footer'>

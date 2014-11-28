@@ -107,17 +107,20 @@
 <script type="text/javascript">
     function edi(Id,showDetail){
       location.href='/manager/ediemployees/'+Id+'/'+showDetail+'/';
-    }
+    }    
     function del(Id){
         $.getJSON("/manager/delemployees/"+Id+"/",function(data){
-            
-            if(data['State']=='Success'){
-                alert("删除成功")
-                location.reload();  
-            }
-            else{
-                alert("失败啦")            
-            }
-        })
+            $.each(data,function(index,value){
+               if(value=="success"){
+                  alert("删除成功！")
+                  location.reload();
+               }
+               else{
+                  alert("删除失败！")
+               }
+
+            });
+
+        });
     }
 </script>

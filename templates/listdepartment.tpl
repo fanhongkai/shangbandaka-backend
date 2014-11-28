@@ -95,14 +95,18 @@
       location.href='/manager/edidepartment/'+Id+'/'+showDetail+'/';
     }
     function del(Id){
-        $.getJSON("/manager/deldepartment/"+Id+"/",function(data){            
-            if(data['State']=='Success'){
-                alert("删除成功")
-                location.reload();  
-            }
-            else{
-                alert("失败啦")            
-            }
-        })
+        $.getJSON("/manager/deldepartment/"+Id+"/",function(data){
+            $.each(data,function(index,value){
+               if(value=="success"){
+                  alert("删除成功！")
+                  location.reload();
+               }
+               else{
+                  alert("删除失败！")
+               }
+
+            });
+
+        });
     }
 </script>

@@ -13,10 +13,10 @@ import md5
 import bottle
 from bottle import Bottle, ServerAdapter
 from bottle import run, debug, route, error, static_file, template,request,response,redirect
-from json import dumps
 from models import CompanyInfo,DepartmentInfo,EmployeesInfo,ManagerInfo,SignSetInfo,RegistrationInfo,LeaveInfo,create_tables,init_tables
 import time
 import sys
+import json
 
 from beaker.middleware import SessionMiddleware
 
@@ -218,12 +218,8 @@ def manager_report():
         getEmp_name = EmployeesInfo.select().where(EmployeesInfo.Id == item.EmployeesId)
         for emp in getEmp_name:
             base['em_name'] = emp.Name
-            base['em_Position'] = emp.Position
-
-            get_depart = DepartmentInfo.select().where(DepartmentInfo.Id == emp.Department)
-            for depar in get_depart:
-                base['department'] = depar.Name
-                data.append(base)
+            base['em_Position'] = emp.Position            
+            data.append(base)
 
     return template(root+"/templates/report.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
 
@@ -283,18 +279,15 @@ def edi_department(Id,showDetail):
         return template(root+"/templates/edi_depart.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
 
 
-
+#/manager/deldepartment/<Id>/
 def del_department(Id):
     """删除部门"""
     #返回JSON对象
-
-    print 'come in'
-    d = DepartmentInfo.get(Id=Id)
-    d.delete_instance()
-    print 'Success'
+   
+    depart = DepartmentInfo.get(Id=Id)    
+    depart.delete_instance()
+    return {"State":"success"}
     
-
-
 def manager_listEmployees():
     """
     员工列表
@@ -355,6 +348,9 @@ def del_employees(Id):
     """
     删除员工信息
     """
+    employe = EmployeesInfo.get(Id=Id)
+    employe.delete_instance()
+    return {"State":"success"}
 
 def manager_leave():
     """ 
@@ -492,11 +488,11 @@ if __name__ == '__main__':
 
     app.route('/manager/listemployees/', method=['GET','POST'])(manager_listEmployees)#员工管理
     app.route('/manager/ediemployees/<Id>/<showDetail>/',method=['POST','GET'])(edi_employees)
-    app.route('/manager/delemployees/<Id>/',method=['POST'])(del_employees)
+    app.route('/manager/delemployees/<Id>/',method=['GET','POST'])(del_employees)
 
     app.route('/manager/leave/',method=['GET','POST'])(manager_leave)#请假管理
     app.route('/manager/edileave/<Id>/<showDetail>/',method=['GET','POST'])(edi_leave)
-    app.route('/manager/delleave/<Id>/',method=['POST'])(del_leave)
+    app.route('/manager/delleave/<Id>/',method=['GET','POST'])(del_leave)
     
     
 

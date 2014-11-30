@@ -23,7 +23,6 @@
   </style>
   <body style='padding-top:60px'>
     % include(templatedir+"Master/_userlayout.tpl") 
-
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
@@ -35,7 +34,6 @@
             <li><a href="#">&nbsp;</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
           </ul>
-
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">{{companyName}}</h1>
@@ -66,8 +64,8 @@
                           %else:
                               <td>未批准</td>
                               <td>
-                                <button type="button" class="btn btn-primary">审核</button>
-                                <button type="button" class="btn">删除</button>
+                                <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)">编辑</button>
+                                <button type="button" class="btn" onclick="del({{d['Id']}})">删除</button>
                               </td>
                           %end                         
                           
@@ -76,7 +74,6 @@
               </tbody>
             </table>
           </div>
-
           <div style='text-align:center;margin:0px auto'>
             <div class="btn-group">
             <button type="button" class="btn btn-default">1</button>
@@ -85,7 +82,6 @@
             <button type="button" class="btn btn-default">4</button>
             </div>
           </div>
-
           <br />
           <br />
           <hr class="half-rule" />
@@ -95,15 +91,34 @@
             </p>
           </div>
         </div>
-      </div>
-    
+      </div>    
     </div>
-
-    
-
     <div class="modal js-loading-bar"></div>
-
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
+<script type="text/javascript">
+    function edit(Id,showDetail){
+        location.href='/manager/edileave/'+Id+'/'+showDetail+'/';
+        
+    }
+    function del(Id){
+      $.getJSON("/manager/delleave/"+Id+"/",function(data){
+              $.each(data,function(index,value){
+                 if(value=="success"){
+                    alert("删除成功！")
+                    location.reload();
+                 }
+                 else{
+                    alert("删除失败！")
+                 }
+
+              });
+
+          });
+
+    }
+
+
+</script>

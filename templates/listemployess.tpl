@@ -33,7 +33,8 @@
             <li><a href="#">市场</a></li>
             <li><a href="#">销售</a></li>
             <li><a href="/manager/listdepartment/">部门</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            <li><a href="/manager/edidepartment/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            <li><a href="/manager/ediemployees/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加员工</a></li>
           </ul>
 
         </div>
@@ -67,7 +68,7 @@
                           <td>{{ d['Phone'] }}</td>
                           <td>{{ d['Email'] }}</td>
                           <td>
-                            <button type="button" class="btn btn-primary" onclick="edi({{d['Id']}},true)">编辑</button>
+                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)">编辑</button>
                             <button type="button" class="btn" onclick="del({{d['Id']}})">删除</button>                          
                           </td>
                         </tr>
@@ -92,20 +93,15 @@
             </p>
           </div>
         </div>
-      </div>
-    
+      </div>    
     </div>
-
-    
-
     <div class="modal js-loading-bar"></div>
-
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
 <script type="text/javascript">
-    function edi(Id,showDetail){
+    function edit(Id,showDetail){
       location.href='/manager/ediemployees/'+Id+'/'+showDetail+'/';
     }    
     function del(Id){

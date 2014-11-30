@@ -16,6 +16,7 @@ from bottle import run, debug, route, error, static_file, template,request,respo
 from models import CompanyInfo,DepartmentInfo,EmployeesInfo,ManagerInfo,SignSetInfo,RegistrationInfo,LeaveInfo,create_tables,init_tables
 import time
 import sys
+import datetime
 import json
 
 from beaker.middleware import SessionMiddleware
@@ -130,6 +131,7 @@ def website():
     """
     return "APP官方网站"
 
+#---------------------------------------------登录-----------------------------------------------
 
 def manager():
     """
@@ -145,62 +147,89 @@ def manager_login():
     """登录 """
     form=request.forms
     if form.submit:
+
         if form.username and form.passwd:
             Company = CompanyInfo.getOne(loginName=form.username)#查询（根据用户名查询密码）
-            pass_data = Company.loginPwd.decode('string-escape')       
-            passwd_md5 = md5.new(form.passwd).hexdigest()#md5加密，32位
-            
-            if pass_data == passwd_md5.strip():#strip()去除空格
-                #登录成功,将用户信息保存到Session 
-                app_session = bottle.request.environ.get('beaker.session')
-                app_session["company"]=str(Company.Id)#保存公司编号
-                app_session["companyName"]=Company.companyName #公司名称
-                redirect("/manager/report/")
-                
-            else:
+            if Company is None:
                 return template(root+"/templates/venderpage/login.tpl",login_status = "用户名或密码错误")
+            else:
+                pass_data = str(Company.loginPwd) 
+                passwd_md5 = str(md5.new(form.passwd).hexdigest())#md5加密，32位
+               
+                if pass_data== passwd_md5.strip():#strip()去除空格
+                    #登录成功,将用户信息保存到Session 
+                    app_session = bottle.request.environ.get('beaker.session')
+                    app_session["company"] = str(Company.Id)#保存公司编号
+                    app_session["companyName"] = Company.companyName #公司名称
+                    redirect("/manager/report/")
+                    
+                else:
+                    return template(root+"/templates/venderpage/login.tpl",login_status = "用户名或密码错误")
 
         else:
             return template(root+"/templates/venderpage/login.tpl",login_status = '用户名、密码不能为空')
     else:       
        
         return template(root+"/templates/venderpage/login.tpl",login_status='')
+
+#----------------------------------------------注册----------------------------------------
         
 def manager_register():    
     """
     开通打卡服务(注册)
     """
     form = request.forms
-    if form.submit:
+    if form.submit:        
         upload = request.files.get('upload')
+
         #name, ext = os.path.splitext(upload.filename)
-        fileExt=upload.filename.split('.')[-1] #获取文件后缀
-        fileExt=upload.filename.split('.')[0] #获取文件名
-        save_path = temp+"/Upload" #指定路径
-        fileType='png,jpg,jpeg'
-        if fileExt in fileType:            
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-            file_path = "{path}/{file}".format(path=save_path, file=upload.filename)
-            with open(file_path,'wb') as open_file:
-                open_file.write(upload.file.read()) #保存文件
-                #---------实例化数据 -----------
-                Company=CompanyInfo()
-                company.loginName=form.username
-                company.loginPwd=form.passwd
-                company.companyName=form.company_name
-                company.Number=int(form.company_number)
-                company.Legal=form.company_contact
-                company.RegistrationNum=str(datatime.datatime.now())+form.company_name
-                company.CompanyPhone=form.company_phone
-                company.CompanyEmail=form.company_email
-                company.StatusId=True
-                company.save(force_insert=True) #主键递增
+        
+        if upload is None:
+            
+            return template(root+"/templates/venderpage/register.tpl",register_status='请选择png,jpg,jpeg文件')
 
         else:
-            return template(root+"/templates/venderpage/register.tpl",register_status='请选择png,jpg,jpeg文件')
+           
+            fileExt=upload.filename.split('.')[-1] #获取文件后缀
+            fileName=upload.filename.split('.')[0] #获取文件名
+            save_path = root+"/temp/Upload" #指定路径
+            fileType='png,jpg,jpeg'
+
+           
+            if fileExt in fileType:                      
+                if not os.path.exists(save_path):
+                    os.makedirs(save_path)
+                file_path = "{path}/{file}".format(path = save_path, file = upload.filename)
+                with open(file_path,'wb') as open_file:
+                    open_file.write(upload.file.read()) #保存文件
+
+                #---------实例化数据 -----------
+        
+                count = CompanyInfo.select().count()
+                company = CompanyInfo()
+                company.Id = count + 1
+                company.loginName = str(form.username)
+                company.loginPwd = md5.new(str(form.passwd)).hexdigest()
+                company.companyName = form.company_name
+                company.Number = int(form.company_number)
+                company.Legal = form.company_contact
+                company.RegistrationNum = form.company_name + str(datetime.datetime.now())[:10]
+                company.CompanyPhone = form.company_phone
+                company.CompanyEmail = form.company_email
+                company.StatusId=True
+                company.save(force_insert=True)
+                redirect("/manager/")                
+
+            else:
+                return template(root+"/templates/venderpage/register.tpl",register_status='请选择png,jpg,jpeg文件')
     else:   
+
         return template(root+"/templates/venderpage/register.tpl",register_status='')
+
+
+
+#-----------------------------------------------考勤管理-----------------------------------
+
 def manager_report():
     """
     查看打卡报表
@@ -209,17 +238,22 @@ def manager_report():
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
-    get_Re = RegistrationInfo.filter(RegistrationInfo.Company == companyId)
-  
+    #get_Re = RegistrationInfo.filter(RegistrationInfo.Company == companyId)
+    
+    data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
 
-    for item in get_Re:        
-        base = {'Id': item.Id,'WorkStatus':item.WorkStatus,'SingTime':item.SingTime.strftime("%Y-%m-%d %H:%M:%S"),'location':item.location}
-
-        getEmp_name = EmployeesInfo.select().where(EmployeesInfo.Id == item.EmployeesId)
-        for emp in getEmp_name:
-            base['em_name'] = emp.Name
-            base['em_Position'] = emp.Position            
-            data.append(base)
+    for item in data_employees:        
+        base = {"Id":item.Id,"Name":item.Name,"Position":item.Position}
+        getRegistByEmployeesId = RegistrationInfo.select().where(RegistrationInfo.Company == companyId and RegistrationInfo.EmployeesId == item.Id)
+        base['WorkStatus'] = ''
+        base['SingTime'] = ''   
+        base['location'] = ''
+        for emp in getRegistByEmployeesId:
+            if not emp.WorkStatus =='' and emp.SingTime is None and emp.location is None:
+                base['WorkStatus'] = emp.WorkStatus
+                base['SingTime'] = emp.SingTime   
+                base['location'] = emp.location 
+        data.append(base)
 
     return template(root+"/templates/report.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
 
@@ -228,6 +262,9 @@ def manager_setting():
     查看打卡报表
     """
     return template(root+"/templates/venderpage/setting.tpl",op_status='')
+
+
+#----------------------------------------------部门信息管理-------------------------------------
 
 def manager_Department():
     """部门列表"""
@@ -252,7 +289,7 @@ def edi_department(Id,showDetail):
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
     
-    if showDetail:
+    if showDetail =='true': #编辑部门信息
 
         get_data = DepartmentInfo.filter(DepartmentInfo.Company==companyId and DepartmentInfo.Id==Id)
         for d in get_data:
@@ -264,31 +301,41 @@ def edi_department(Id,showDetail):
             DepartmentInfo.update(Name=form.Name,Phone=form.Phone,Leader=form.Leader).where(DepartmentInfo.Id==Id).execute()
             redirect("/manager/listdepartment/")
 
-        return template(root+"/templates/edi_depart.tpl",showDetail=True,data=data,templatedir=root+'/templates/',companyName=companyName)
+        return template(root+"/templates/edit_depart.tpl",showDetail=True,data=data,templatedir=root+'/templates/',companyName=companyName)
        
-    else:
+    else:           #添加部门信息
+        
         form = request.forms
-        if form.submit:
+        count = DepartmentInfo.select().count()
+        print count
+        if form.submit:            
             depart = DepartmentInfo()
+            depart.Id = count + 1
             depart.Name = form.Name
             depart.Company = companyId
             depart.Phone = form.Phone
             depart.Leader = form.Leader           
             depart.save(force_insert=True)
             redirect("/manager/listdepartment/") #跳转到部门列表
-        return template(root+"/templates/edi_depart.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
+        
+        return template(root+"/templates/edit_depart.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
 
 
 #/manager/deldepartment/<Id>/
-def del_department(Id):
+def del_department(Id):     #删除部门信息
+
     """删除部门"""
     #返回JSON对象
    
-    depart = DepartmentInfo.get(Id=Id)    
-    depart.delete_instance()
-    return {"State":"success"}
-    
-def manager_listEmployees():
+    depart = DepartmentInfo.get(Id = Id)  
+    if not depart is None:  
+        depart.delete_instance()
+        return {"State":"success"}
+
+#---------------------------------------------员工信息管理--------------------------------------
+
+
+def manager_listEmployees(): #员工列表
     """
     员工列表
     """
@@ -300,7 +347,7 @@ def manager_listEmployees():
     get_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
     for item in get_em:
         base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
-        get_depart = DepartmentInfo.select().where(DepartmentInfo.Id == item.Department)
+        get_depart = DepartmentInfo.select().where(DepartmentInfo.Id == item.Department and DepartmentInfo.Company==companyId)
         base['department'] = ''
         for depar in get_depart:
             if not depar.Name == '':
@@ -309,7 +356,8 @@ def manager_listEmployees():
             
     return template(root+"/templates/listEmployess.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
 
-def edi_employees(Id,showDetail):
+def edi_employees(Id,showDetail):  #员工信息管理
+
     """
     员工的添加与编辑
     """
@@ -317,10 +365,20 @@ def edi_employees(Id,showDetail):
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
 
-    if showDetail:
+    #---------获取部门列表-----------
+    data_depart = DepartmentInfo.filter(DepartmentInfo.Company==companyId)
+    array_depart = []
+    for depart in data_depart:
+        base = {"Id":depart.Id,"Name":depart.Name}     
+        array_depart.append(base)      
+
+    #------------end-------------
+
+    if showDetail =='true':
         data_employ = EmployeesInfo.filter(EmployeesInfo.Company==companyId and EmployeesInfo.Id==Id)
         for item in data_employ:
             data = {"Id":item.Id,"Name":item.Name,"Department":item.Department,"Sex":item.Sex,"IdCard":item.IdCard,"Phone":item.Phone,"Email":item.Email,"Position":item.Position}
+        
         
         form = request.forms
         res_dic = []
@@ -328,30 +386,41 @@ def edi_employees(Id,showDetail):
             EmployeesInfo.update(Name=form.Name,Sex=form.Sex,IdCard=form.IdCard,Phone=form.Phone,Email=form.Email,Position=form.Position).where(EmployeesInfo.Id==int(Id)).execute()
             redirect("/manager/listemployees/")
 
-        return template(root+"/templates/edi_employees.tpl",showDetail= True,templatedir=root+'/templates/',data=data,companyName=companyName)
+        return template(root+"/templates/edit_employees.tpl",array_depart = array_depart,showDetail= True,templatedir=root+'/templates/',data=data,companyName=companyName)
     else:
         form = request.forms
         if form.submit:
-            employe = EmployeesInfo()
+            #获取员工根据对应的公司Id查找员工总数，新的员工Id：count+1 
+            count = EmployeesInfo.select().count()
+            
+            employe = EmployeesInfo()            
+            employe.Id = count + 1            
             employe.Name = form.Name
-            employe.Department = form.Department
-            employe.Sex = form.Sex
-            employe.IdCard = form.IdCard
-            employe.Phone =form.Phone
+            employe.LoginName = form.Phone            
+            employe.LoginPwd = md5.new("123456").hexdigest()
+            employe.Company = companyId
+            employe.Department = form.department            
+            employe.Sex = form.Sex           
+            employe.IdCard = form.IdCard            
+            employe.Phone = form.Phone            
+            employe.Email = form.Email
             employe.Position = form.Position
-            employe.save(force_insert=True)
-            redirect("/manager/listEmployess/")
+            employe.Imei = "123456xaxahisia"
+            employe.save(force_insert = True)#不管主键是否存在的情况加force_insert = True
+            redirect("/manager/listemployees/")
 
-        return template(root+"/templates/edi_employees.tpl",showDetail= False,templatedir=root+'/templates/',data=data,companyName=companyName)
+        return template(root+"/templates/edit_employees.tpl",array_depart = array_depart,showDetail = False,templatedir = root+'/templates/',companyName = companyName)
 
-def del_employees(Id):
+def del_employees(Id):  #删除员工信息
     """
     删除员工信息
     """
     employe = EmployeesInfo.get(Id=Id)
-    employe.delete_instance()
-    return {"State":"success"}
+    if not employe is None:
+        employe.delete_instance()        
+        return {"State":"success"}
 
+#----------------------------------------请假管理--------------------------------------------
 def manager_leave():
     """ 
     请假列表 
@@ -369,21 +438,41 @@ def manager_leave():
             base['Sex'] = getEmp_name.Sex
             base['Phone'] = getEmp_name.Phone
             data.append(base)
-    return template(root+"/templates/Leave.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
+    return template(root+"/templates/listleave.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def edi_leave(Id,showDetail):
     """
     请假编辑与添加
     """
-    if showDetail:
-        print '编辑'
-    else:
-        print '添加'
+    app_session = bottle.request.environ.get('beaker.session')
+    companyId = app_session.get('company')
+    companyName = app_session.get('companyName')
+    
+    if showDetail =='true':        
+        data_leave = LeaveInfo.filter(LeaveInfo.Company == companyId and LeaveInfo.Id == Id)
+        for item in data_leave:
+            getEmployeesById = EmployeesInfo.filter(EmployeesInfo.Id == item.EmployeesId)
+            for employe in getEmployeesById:
+                data = {"Id":item.Id,"StartTime":item.StartTime,"Reason":item.Reason,"Agree":item.Agree,"Name":employe.Name,"Sex":employe.Sex}
+         
+        form =request.forms
+        print 'xaaaaaaaaaaaa'
+        if form.submit:
+            LeaveInfo.update(Agree = True,reMsg = form.reMsg).where(LeaveInfo.Id==int(Id)).execute()
+            edirect("/manager/listleave")
+            
+        return template(root+"/templates/edit_leave.tpl",showDetail=True,templatedir= root+'/templates/',data=data,companyName=companyName)
+
+    
 
 def del_leave(Id):
     """
     删除请假信息
     """
+    leave = LeaveInfo.get(Id=Id)
+    if not leave is None:
+        leave.delete_instance()
+        return {"State":"success"}
 
 def api():
     """
@@ -466,8 +555,8 @@ def api_checkin():
 
 ######### WEBAPP ROUTERS ###############
 if __name__ == '__main__':
-    app = Bottle()
 
+    app = Bottle()
 
     app.route('/', method='GET')(home)
     app.route('/__exit', method=['GET','HEAD'])(__exit)
@@ -483,14 +572,14 @@ if __name__ == '__main__':
     app.route('/manager/setting/', method=['GET','HEAD'])(manager_setting)  #设置
 
     app.route('/manager/listdepartment/', method=['GET','POST'])(manager_Department) #部门管理
-    app.route('/manager/edidepartment/<Id>/<showDetail>/',method=['POST','GET'])(edi_department) 
+    app.route('/manager/edidepartment/<Id>/<showDetail>/',method=['GET','POST'])(edi_department) 
     app.route('/manager/deldepartment/<Id>/',method=['GET','POST'])(del_department)
 
     app.route('/manager/listemployees/', method=['GET','POST'])(manager_listEmployees)#员工管理
     app.route('/manager/ediemployees/<Id>/<showDetail>/',method=['POST','GET'])(edi_employees)
     app.route('/manager/delemployees/<Id>/',method=['GET','POST'])(del_employees)
 
-    app.route('/manager/leave/',method=['GET','POST'])(manager_leave)#请假管理
+    app.route('/manager/listleave/',method=['GET','POST'])(manager_leave)#请假管理
     app.route('/manager/edileave/<Id>/<showDetail>/',method=['GET','POST'])(edi_leave)
     app.route('/manager/delleave/<Id>/',method=['GET','POST'])(del_leave)
     

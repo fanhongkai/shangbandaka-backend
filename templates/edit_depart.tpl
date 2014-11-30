@@ -31,7 +31,7 @@
             <li><a href="#">开发</a></li>
             <li><a href="#">市场</a></li>
             <li><a href="#">销售</a></li>
-            <li><a href="/manager/listDepartment/">部门</a></li>
+            <li><a href="/manager/listdepartment/">部门</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
           </ul>
         </div>
@@ -74,25 +74,25 @@
                   </div>
                 </form>
               %else:
-                <form action="/manager/edidepartment/0/false" method="post" role="form">
+                <form action="/manager/edidepartment/0/false/" method="post" role="form">
                   <div class="form-item">
                       <label for="name">部门名称</label>
                       <div> 
-                      <input type="text" value="" name="Name" Id="d_Name"/>
+                      <input type="text" placeholder="部门名称"  value="" name="Name" Id="d_Name"/>
                       </div>           
                   </div>
                   <br/>
                   <div class="form-item">
                       <label for="name">部门电话</label>
                       <div> 
-                      <input type="text"  name="Phone" Id="Phone"/>
+                      <input type="text" placeholder="部门电话"  name="Phone" Id="Phone"/>
                       </div>           
                   </div> 
                   <br/>
                   <div class="form-item">
                       <label for="name">部门经理</label>
                       <div> 
-                      <input type="text" value="" name="Leader" Id="Leader"/>
+                      <input type="text" value="" placeholder="部门经理"  name="Leader" Id="Leader"/>
                       </div>           
                   </div> 
                   <br />
@@ -115,41 +115,26 @@
     <div class="modal js-loading-bar"></div>
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/assets/static/jquery.form.js"></script>
+    
   </body>
 </html>
 <script type="text/javascript">
-    $(document).ready(function(){
-        $('#_form').ajaxForm(function(){
-            beforeSubmit:check,
-            success:function(re){
-                if(re.State == "Success"){
-                    location.href = '/manager/listdepartment/'   
-                }
-                else{
-                    alert("系统发生意外的错误，请稍后再试")
-                }
-            }
-        
-        });
-        return false;
-    });
-</script>
-<script type="text/javascript">
   function check(){
+      
        var name = $("#d_Name").val(); //部门名称
        if (name == '' || name == undefined || name == null) {
             alert("请输入部门名称");
             $("#Name").focus();
             return false;
         }
-       var Phone = $("#Phone").val(); //部门名称
-       if (Phone == '' || Phone == undefined || Phone == null) {
+       var Phone = $("#Phone").val(); //部门电话
+       var reg_phone = /^(((14[0-9]{1})|(18[0-9]{1})|(13[0-9]{1})|159|153)+\d{8})$/; //手机格式
+       if (Phone == '' || Phone == undefined || Phone == null || !reg_phone.test(Phone)) {
             alert("请输入部门电话");
             $("#Phone").focus();
             return false;
         }
-        var Leader = $("#Leader").val(); //部门名称
+        var Leader = $("#Leader").val(); //部门经理
        if (Leader == '' || Leader == undefined || Leader == null) {
             alert("请输入部门电话");
             $("#Leader").focus();

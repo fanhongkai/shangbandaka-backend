@@ -55,7 +55,7 @@
                           <td>{{ d['Phone'] }}</td>
                           <td>{{ d['Leader'] }}</td>
                           <td>
-                            <button type="button" class="btn btn-primary" onclick="edi({{d['Id']}},true)">编辑</button>
+                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)">编辑</button>
                             <button type="button" class="btn" onclick="del({{d['Id']}})">删除</button>
                           </td>
                         </tr>
@@ -91,7 +91,7 @@
   </body>
 </html>
 <script type="text/javascript">
-    function edi(Id,showDetail){
+    function edit(Id,showDetail){
       location.href='/manager/edidepartment/'+Id+'/'+showDetail+'/';
     }
     function del(Id){

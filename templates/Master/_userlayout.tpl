@@ -15,7 +15,7 @@
           <ul class="nav navbar-nav">
            <li class="company"><a href="/manager/listemployees/">公司</a></li>
            <li class="regist"><a href="/manager/report/">考勤</a></li>
-           <li class="leave"><a href="/manager/leave/">请假</a></li>
+           <li class="leave"><a href="/manager/listleave/">请假</a></li>
                
           </ul>
           <ul class="nav navbar-nav navbar-right">

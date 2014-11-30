@@ -68,26 +68,37 @@
                   <th>职务</th>
                   <th>出勤情况</th>
                   <th>时间</th>   
-                  <th>操作</th>               
+                         
                 </tr>
               </thead>
               <tbody>                
                     %for d in data:
                         <tr>
-                          <td>{{ d['location'] }}</td>
-                          <td>{{ d['em_name'] }}</td>
-                          <td>{{ d['em_Position']}}</td>
-                          <td>{{ d['WorkStatus'] }}</td>                          
-                          <td>{{ d['SingTime'] }}</td>
-                          <td>
-                            <button type="button" class="btn">删除</button>
-                          </td>
+                          %if d['location']=='':
+                              <td>-</td>
+                          %else:
+                              <td>{{ d['location']}}</td>
+                          %end
+                         
+                          <td>{{ d['Name'] }}</td>
+                          <td>{{ d['Position']}}</td>
+                          %if d['WorkStatus']=='':
+                              <td>-</td>
+                          %else:
+                              <td>{{ d['WorkStatus']}}</td>
+                          %end
+
+                          %if d['SingTime']=='':
+                              <td>-</td>
+                          %else:
+                              <td>{{ d['SingTime']}}</td>
+                          %end
+                          
                         </tr>
                     %end
               </tbody>
             </table>
           </div>
-
           <div style='text-align:center;margin:0px auto'>
             <div class="btn-group">
             <button type="button" class="btn btn-default">1</button>
@@ -96,7 +107,6 @@
             <button type="button" class="btn btn-default">4</button>
             </div>
           </div>
-
           <br />
           <br />
           <hr class="half-rule" />
@@ -106,14 +116,9 @@
             </p>
           </div>
         </div>
-      </div>
-    
-    </div>
-
-    
-
+      </div>    
+    </div> 
     <div class="modal js-loading-bar"></div>
-
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>

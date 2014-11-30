@@ -33,8 +33,8 @@ def create_tables():
 def init_tables():
     CompanyInfo.insert(loginName='admin',loginPwd='e10adc3949ba59abbe56e057f20f883e',companyName='优趣天下',Number=500,Legal='preson',RegistrationNum='xaxacsnih',CompanyPhone='18076598709',CompanyEmail='1425412316@qq.com').execute()
     DepartmentInfo.insert(Name='技术部',Company=1,Phone='18076598709',Leader='王一').execute()
-    EmployeesInfo.insert(Id=1,Name='王八2',LoginName='wangba2',LoginPwd='e10adc3949ba59abbe56e057f20f883e',Company=1,Department=1,Sex='男',IdCard='452229199406235119',Phone='18777452591',Email='1425412316@qq',Position='员工',Imei='xacdcooccos').execute()
-    EmployeesInfo.insert(Id=2,Name='王八',LoginName='wangba',LoginPwd='e10adc3949ba59abbe56e057f20f883e',Company=1,Department=1,Sex='男',IdCard='452229199406235119',Phone='18777452591',Email='1425412316@qq',Position='员工',Imei='xacdcooccos').execute()
+    EmployeesInfo.insert(Id=1,Name='张三',LoginName='zhangsan',LoginPwd='e10adc3949ba59abbe56e057f20f883e',Company=1,Department=1,Sex='男',IdCard='452229199406235119',Phone='18777452591',Email='1425412316@qq.com',Position='员工',Imei='xacdcooccos').execute()
+    EmployeesInfo.insert(Id=2,Name='李四',LoginName='lisi',LoginPwd='e10adc3949ba59abbe56e057f20f883e',Company=1,Department=1,Sex='男',IdCard='452229199406235119',Phone='18777452591',Email='1425412316@qq.com',Position='员工',Imei='xacdcooccos').execute()
     ManagerInfo.insert(LoginName='userAdmin',LoginPswd='e10adc3949ba59abbe56e057f20f883e',Name='李四',LastLoginData='2014-11-09 10:00:00').execute()
     SignSetInfo.insert(Company=1,StartTime='8:00',EndTime='9:00',SignName='优趣天下',location='129,126').execute()
     RegistrationInfo.insert(EmployeesId=1,Company=1,WorkStatus='正常上班',location='129,126').execute()
@@ -122,7 +122,7 @@ class RegistrationInfo(BaseModel):#签到
         def __unicode__(self):
             return "%s: %s :%s" %(self.Id,self.EmployeesId,self.SingTime)
         class Meta:
-            order_by=('Id',)
+            order_by=('SingTime',)
         
 class LeaveInfo(BaseModel):#请假
         Id=peewee.PrimaryKeyField(default=1)

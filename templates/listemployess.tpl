@@ -29,12 +29,14 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">全部</a></li>
-            <li><a href="#">开发</a></li>
-            <li><a href="#">市场</a></li>
-            <li><a href="#">销售</a></li>
-            <li><a href="/manager/listdepartment/">部门</a></li>
-            <li><a href="/manager/edidepartment/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            %for depart in array_depart:
+              <li><a href="#">{{depart['Name']}}</a></li>
+            %end
             <li><a href="/manager/ediemployees/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加员工</a></li>
+            <li><hr></li>
+            <li><a href="/manager/listdepartment/"><span class="glyphicon glyphicon-th-large"></span>部门管理</a></li>
+            <li><a href="/manager/edidepartment/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            
           </ul>
 
         </div>
@@ -68,8 +70,9 @@
                           <td>{{ d['Phone'] }}</td>
                           <td>{{ d['Email'] }}</td>
                           <td>
-                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)">编辑</button>
-                            <button type="button" class="btn" onclick="del({{d['Id']}})">删除</button>                          
+                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)"><span class="glyphicon glyphicon-pencil"></span>编辑</button>
+                            <button type="button" class="btn" onclick="del({{d['Id']}})">
+                              <span class="glyphicon glyphicon-remove"></span>删除</button>
                           </td>
                         </tr>
                     %end

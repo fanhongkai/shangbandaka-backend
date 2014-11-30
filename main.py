@@ -238,7 +238,11 @@ def manager_report():
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
-    #get_Re = RegistrationInfo.filter(RegistrationInfo.Company == companyId)
+    
+    #---------获取部门列表-----------
+    array_depart = getDepartment().getdepart()#调用类
+
+    #------------end-------------
     
     data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
 
@@ -255,7 +259,7 @@ def manager_report():
                 base['location'] = emp.location 
         data.append(base)
 
-    return template(root+"/templates/report.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
+    return template(root+"/templates/report.tpl",array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def manager_setting():
     """
@@ -339,11 +343,20 @@ def manager_listEmployees(): #员工列表
     """
     员工列表
     """
+
+   
+
     data = []
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName')
     
+    #---------获取部门列表-----------
+    
+    array_depart = getDepartment().getdepart()#调用类
+    
+    #------------end-------------
+
     get_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
     for item in get_em:
         base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
@@ -354,7 +367,7 @@ def manager_listEmployees(): #员工列表
                 base['department'] = depar.Name
         data.append(base)
             
-    return template(root+"/templates/listEmployess.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
+    return template(root+"/templates/listEmployess.tpl",array_depart = array_depart,templatedir = root+'/templates/',data=data,companyName=companyName)
 
 def edi_employees(Id,showDetail):  #员工信息管理
 
@@ -455,15 +468,13 @@ def edi_leave(Id,showDetail):
             for employe in getEmployeesById:
                 data = {"Id":item.Id,"StartTime":item.StartTime,"Reason":item.Reason,"Agree":item.Agree,"Name":employe.Name,"Sex":employe.Sex}
          
-        form =request.forms
-        print 'xaaaaaaaaaaaa'
+        form =request.forms        
         if form.submit:
             LeaveInfo.update(Agree = True,reMsg = form.reMsg).where(LeaveInfo.Id==int(Id)).execute()
-            edirect("/manager/listleave")
-            
-        return template(root+"/templates/edit_leave.tpl",showDetail=True,templatedir= root+'/templates/',data=data,companyName=companyName)
+            redirect("/manager/listleave/")  
 
-    
+    return template(root+"/templates/edit_leave.tpl",showDetail=True,templatedir= root+'/templates/',data=data,companyName=companyName)
+   
 
 def del_leave(Id):
     """
@@ -474,6 +485,8 @@ def del_leave(Id):
         leave.delete_instance()
         return {"State":"success"}
 
+
+#-------------------------------------------------API接口----------------------------------------
 def api():
     """
     APP的API接口概述
@@ -551,6 +564,22 @@ def api_checkin():
 
     response.content_type = 'application/json'
     return dumps({"err":"0", "msg":"ok"})
+
+#------------------------------------------------类------------------------------------
+
+class getDepartment:
+    def getdepart(self):
+        app_session = bottle.request.environ.get('beaker.session')
+        companyId = app_session.get('company')
+        companyName = app_session.get('companyName') 
+
+        #---------获取部门列表-----------
+        data_depart = DepartmentInfo.filter(DepartmentInfo.Company==companyId)
+        array_depart = []
+        for depart in data_depart:
+            base = {"Id":depart.Id,"Name":depart.Name}     
+            array_depart.append(base)  
+        return array_depart 
 
 
 ######### WEBAPP ROUTERS ###############

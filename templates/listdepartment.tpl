@@ -55,8 +55,9 @@
                           <td>{{ d['Phone'] }}</td>
                           <td>{{ d['Leader'] }}</td>
                           <td>
-                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)">编辑</button>
-                            <button type="button" class="btn" onclick="del({{d['Id']}})">删除</button>
+                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)"><span class="glyphicon glyphicon-pencil"></span>编辑</button>
+                            <button type="button" class="btn" onclick="del({{d['Id']}})">
+                              <span class="glyphicon glyphicon-remove"></span>删除</button>
                           </td>
                         </tr>
                     %end

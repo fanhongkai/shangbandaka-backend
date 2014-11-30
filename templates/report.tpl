@@ -29,11 +29,9 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">全部</a></li>
-            <li><a href="#">开发</a></li>
-            <li><a href="#">市场</a></li>
-            <li><a href="#">销售</a></li>
-            <li><a href="#">&nbsp;</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            %for depart in array_depart:
+              <li><a href="#">{{depart['Name']}}</a></li>
+            %end            
           </ul>
 
         </div>
@@ -58,7 +56,11 @@
             </div>
           </div>
 
-          <h2 class="sub-header">2014-07-07 打卡情况 <select style='float:right'><option>2014/07/07</option><option>2014/07/06</option></select></h2>
+          <h2 class="sub-header">
+            <label id="text"></label>
+            <select style='float:right' Id = "selectTime">              
+            </select>
+          </h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
@@ -67,7 +69,7 @@
                   <th>姓名</th>
                   <th>职务</th>
                   <th>出勤情况</th>
-                  <th>时间</th>   
+                  <th>签到时间</th>   
                          
                 </tr>
               </thead>
@@ -123,3 +125,35 @@
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
+<script type="text/javascript">
+    $(function () {
+        $("#text").text(showOption(0) + "  打卡情况");
+
+        var option = '<option>' + showOption(0) + '</option>';
+        option += '<option>' + showOption(-1) + '</option>';
+        option += '<option>' + showOption(-2) + '</option>';
+        option += '<option>' + showOption(-3) + '</option>';
+        option += '<option>' + showOption(-4) + '</option>';
+        option += '<option>' + showOption(-5) + '</option>';
+        option += '<option>' + showOption(-6) + '</option>';
+        option += '<option>' + showOption(-7) + '</option>';
+        $("#selectTime").html(option);
+
+        var datetime = $("#selectTime").val();
+       
+
+    });
+    function showOption(day) {//获取时间格式2014-11-01
+        var dd = new Date();
+        dd.setDate(dd.getDate() + day); //获取AddDayCount天后的日期    
+        var y = dd.getFullYear();
+        // var m = dd.getMonth() + 1; //获取当前月份的日期   
+        var m = ((dd.getMonth() + 1) < 10 ? "0" : "") + (dd.getMonth() + 1)
+        //var d = dd.getDate();
+        var d = (dd.getDate() < 10 ? "0" : "") + dd.getDate()
+        var s = y + "-" + m + "-" + d;
+        return s
+
+    }
+
+</script>

@@ -51,7 +51,7 @@ class BaseModel(peewee.Model):
             return None
 
 class CompanyInfo(BaseModel):#公司信息
-        #inst.save(force_insert=True)#加入这句可以让Id自增
+        
         Id=peewee.PrimaryKeyField()
         loginName=peewee.CharField(unique=True)
         loginPwd=peewee.CharField(max_length=200)
@@ -65,7 +65,7 @@ class CompanyInfo(BaseModel):#公司信息
             return "%s : %s" %(self.loginName,self.loginPwd)
     
 class DepartmentInfo(BaseModel):#部门信息
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         Name=peewee.CharField(max_length=10)
         Company=peewee.IntegerField()#--公司id
         Phone =peewee.CharField(max_length=20)
@@ -74,7 +74,7 @@ class DepartmentInfo(BaseModel):#部门信息
             return "%S : %s" %(self.Id,self.Name)  
 
 class EmployeesInfo(BaseModel):#员工信息
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         Name=peewee.CharField(max_length=10)
         LoginName=peewee.CharField(max_length=20)
         LoginPwd=peewee.CharField(max_length=200)
@@ -91,7 +91,7 @@ class EmployeesInfo(BaseModel):#员工信息
             return "%s: %s :%s" %(self.Name,self.LoginName,self.Position)
 
 class ManagerInfo(BaseModel):#管理员
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         LoginName=peewee.CharField(max_length=20)
         LoginPswd=peewee.CharField(max_length=200)
         Name=peewee.CharField(max_length=20)
@@ -101,7 +101,7 @@ class ManagerInfo(BaseModel):#管理员
             return "%s: %s" %(self.LoginName,self.Name)
         
 class SignSetInfo(BaseModel):#签到设置
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         Company=peewee.IntegerField()#--公司id
         StartTime=peewee.DateTimeField()
         EndTime=peewee.DateTimeField()
@@ -112,7 +112,7 @@ class SignSetInfo(BaseModel):#签到设置
             return "%s: %s" %(self.SignName,self.location)
         
 class RegistrationInfo(BaseModel):#签到
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         Company=peewee.IntegerField()#--公司id
         EmployeesId=peewee.IntegerField()#--员工编号        
         WorkStatus=peewee.CharField(max_length=10)
@@ -125,7 +125,7 @@ class RegistrationInfo(BaseModel):#签到
             order_by=('SingTime',)
         
 class LeaveInfo(BaseModel):#请假
-        Id=peewee.PrimaryKeyField(default=1)
+        Id=peewee.PrimaryKeyField()
         Company=peewee.IntegerField()#--公司id
         EmployeesId=peewee.IntegerField()#--员工编号        
         StartTime=peewee.DateTimeField()

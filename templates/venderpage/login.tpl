@@ -26,7 +26,7 @@
     </div><!-- /.navbar -->
 
     <div class="container main pt-10">
-      <form action="/manager/login/" method="post" class="form-signin" role="form">
+      <form action="/manager/login/" method="post" class="form-signin" role="form" id="_form">
         <h3 class='center ml-not'>企业登录</h3>
         <span style='color:grey'>用户名:</span><br />
         <input type="text" name="username" id="username" class="form-control" value="" placeholder="用户名"  autofocus autocomplete='off'>
@@ -49,3 +49,19 @@
    
   </body>
 </html>
+<script type="text/javaScript">
+    window.document.onkeydown = disabledRefresh;
+    function disabledRefresh(evt){
+        evt = (evt) ?evt:window.event
+        if(evt.keyCode==13){
+            $("#_form").submit();
+        }
+    }
+    $(function () {
+        $("#vender-login").click(function () {
+            $(this).button('loading').delay(1000).queue(function () {
+               //$(this).button('reset');
+            });
+        });
+    });  
+</script>

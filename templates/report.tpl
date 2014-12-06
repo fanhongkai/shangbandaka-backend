@@ -39,20 +39,49 @@
           <h1 class="page-header">{{companyName}}</h1>
 
           <div class="row placeholders">
+            %for item in SingInfo:
+                %if item["Id"]==1:                     
+                    <div class="col-xs-6 col-sm-3 placeholder">
+                        <span class="glyphicon glyphicon-home" style="font-size:36px"></span>
+                        <h4>{{item["SignName"]}}</h4>
+                        <span class="text-muted">{{item["StartTime"]}}-{{item["EndTime"]}}</span>
+                        <br/>
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i>管理</a>
+                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="/manager/setSign/{{item["Id"]}}/true/"><i class="icon-pencil"></i> 编辑</a></li>
+                              <li><a onclick="del({{item['Id']}})"><i class="icon-trash"></i> 删除</a></li>
+                            </ul>
+                        </div>
+                      </div>
+                   
+                %else:
+                    
+                      <div class="col-xs-6 col-sm-3 placeholder">
+                        <span class="glyphicon glyphicon-map-marker" style="font-size:36px"></span>
+                        <h4>{{item["SignName"][:8]+'...'}}</h4>
+                        <span class="text-muted">{{item["StartTime"]}}-{{item["EndTime"]}}</span>
+                        <br/>
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i>管理</a>
+                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="/manager/setSign/{{item["Id"]}}/true/"><i class="icon-pencil"></i> 编辑</a></li>
+                              <li><a onclick="del({{item['Id']}})"><i class="icon-trash"></i> 删除</a></li>
+                            </ul>
+                        </div>
+                      </div>
+
+                     
+                %end
+            %end
             <div class="col-xs-6 col-sm-3 placeholder">
-              <span class="glyphicon glyphicon-home" style="font-size:36px"></span>
-              <h4>趣味大厦A座</h4>
-              <span class="text-muted">9：00 - 20：00</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span class="glyphicon glyphicon-map-marker" style="font-size:36px"></span>
-              <h4>联通驻场</h4>
-              <span class="text-muted">9：00 - 20：00</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span class="glyphicon glyphicon-plus-sign" style="font-size:36px"></span>
-              <h4>新增打卡点</h4>
-              <span class="text-muted">自定义</span>
+              <a href="/manager/setSign/0/false/">
+                <span class="glyphicon glyphicon-plus-sign" style="font-size:36px"></span>
+                <h4>新增打卡点</h4>
+                <span class="text-muted">自定义</span>
+              </a>
             </div>
           </div>
 
@@ -155,5 +184,45 @@
         return s
 
     }
+    function del(Id){
+      $.getJSON("/manager/delsign/"+Id+"/",function(data){
+              $.each(data,function(index,value){
+                 if(value=="success"){                   
+                    location.reload();
+                 }
+                 else{
+                    alert("删除失败！")
+                 }
+
+              });
+
+          });
+
+    }
 
 </script>
+<style type="text/css">
+  a:link {
+   text-decoration: none;
+  }
+  a:visited {
+   text-decoration: none;
+  }
+  a:hover {
+   text-decoration: none;
+  }
+  a:active {
+   text-decoration: none;
+  }
+  .btn-primary {
+  color: #fff;
+  background-color: #878787;
+  border-color: #878787;
+  }
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #878787;
+border-color: #878787;
+}
+
+</style>

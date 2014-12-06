@@ -205,9 +205,8 @@ def manager_register():
 
                 #---------实例化数据 -----------
         
-                count = CompanyInfo.select().count()
-                company = CompanyInfo()
-                company.Id = count + 1
+                
+                company = CompanyInfo()                
                 company.loginName = str(form.username)
                 company.loginPwd = md5.new(str(form.passwd)).hexdigest()
                 company.companyName = form.company_name
@@ -240,10 +239,15 @@ def manager_report():
     companyName = app_session.get('companyName') 
     
     #---------获取部门列表-----------
-    array_depart = getDepartment().getdepart()#调用类
+    array_depart = baseClass().getdepart()#调用类
 
     #------------end-------------
     
+    #---------获取签到位置信息-------
+
+    SingInfo = baseClass().getSingInfo()#调用类
+
+    #---------end--------------------
     data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
 
     for item in data_employees:        
@@ -259,7 +263,7 @@ def manager_report():
                 base['location'] = emp.location 
         data.append(base)
 
-    return template(root+"/templates/report.tpl",array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
+    return template(root+"/templates/report.tpl",SingInfo = SingInfo,array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def manager_setting():
     """
@@ -309,12 +313,9 @@ def edi_department(Id,showDetail):
        
     else:           #添加部门信息
         
-        form = request.forms
-        count = DepartmentInfo.select().count()
-        print count
+        form = request.forms       
         if form.submit:            
-            depart = DepartmentInfo()
-            depart.Id = count + 1
+            depart = DepartmentInfo()            
             depart.Name = form.Name
             depart.Company = companyId
             depart.Phone = form.Phone
@@ -353,7 +354,7 @@ def manager_listEmployees(): #员工列表
     
     #---------获取部门列表-----------
     
-    array_depart = getDepartment().getdepart()#调用类
+    array_depart = baseClass().getdepart()#调用类
     
     #------------end-------------
 
@@ -404,10 +405,9 @@ def edi_employees(Id,showDetail):  #员工信息管理
         form = request.forms
         if form.submit:
             #获取员工根据对应的公司Id查找员工总数，新的员工Id：count+1 
-            count = EmployeesInfo.select().count()
             
-            employe = EmployeesInfo()            
-            employe.Id = count + 1            
+            
+            employe = EmployeesInfo()
             employe.Name = form.Name
             employe.LoginName = form.Phone            
             employe.LoginPwd = md5.new("123456").hexdigest()
@@ -419,7 +419,7 @@ def edi_employees(Id,showDetail):  #员工信息管理
             employe.Email = form.Email
             employe.Position = form.Position
             employe.Imei = "123456xaxahisia"
-            employe.save(force_insert = True)#不管主键是否存在的情况加force_insert = True
+            employe.save(force_insert = True)#不管主键是否存在的情况加force_insert = True,相当于id自动递增
             redirect("/manager/listemployees/")
 
         return template(root+"/templates/edit_employees.tpl",array_depart = array_depart,showDetail = False,templatedir = root+'/templates/',companyName = companyName)
@@ -483,6 +483,51 @@ def del_leave(Id):
     leave = LeaveInfo.get(Id=Id)
     if not leave is None:
         leave.delete_instance()
+        return {"State":"success"}
+#-------------------------------------------------签到设置---------------------------------------
+
+def setSing(Id,showDetail):
+    """
+    签到设置
+    """
+    app_session = bottle.request.environ.get('beaker.session')
+    companyId = app_session.get('company')
+    companyName = app_session.get('companyName') 
+    
+    if showDetail=='true': #编辑
+
+        data_singInfo = SignSetInfo.filter(SignSetInfo.Company == companyId and SignSetInfo.Id == Id)
+        
+        for item in data_singInfo:
+            data = {"Id":item.Id,"StartTime":item.StartTime,"EndTime":item.EndTime,"SignName":item.SignName}
+            
+        form = request.forms
+        if form.submit:
+            SignSetInfo.update(StartTime=form.startTime,EndTime=form.endTime,SignName = form.suggestId,location=form.PutText).where(SignSetInfo.Id==int(Id)).execute()
+            redirect("/manager/report/")
+
+        return template(root+"/templates/setSing.tpl",showDetail=True,templatedir=root+'/templates/',data=data,companyName=companyName)
+    else:       #添加
+        form = request.forms
+        if form.submit:
+           
+            
+            new_singInfo = SignSetInfo()            
+            new_singInfo.Company = companyId
+            new_singInfo.StartTime = form.startTime
+            new_singInfo.EndTime = form.endTime
+            new_singInfo.SignName = form.suggestId
+            new_singInfo.location = form.PutText
+            new_singInfo.save(force_insert=True)
+            redirect("/manager/report/")            
+
+    return template(root+"/templates/setSing.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
+
+def  deleteSing(Id):
+    
+    sign = SignSetInfo.get(Id=Id)
+    if not sign is None:
+        sign.delete_instance()
         return {"State":"success"}
 
 
@@ -567,7 +612,7 @@ def api_checkin():
 
 #------------------------------------------------类------------------------------------
 
-class getDepartment:
+class baseClass:
     def getdepart(self):
         app_session = bottle.request.environ.get('beaker.session')
         companyId = app_session.get('company')
@@ -581,6 +626,18 @@ class getDepartment:
             array_depart.append(base)  
         return array_depart 
 
+    def getSingInfo(self):
+        app_session = bottle.request.environ.get('beaker.session')
+        companyId = app_session.get('company')
+        companyName = app_session.get('companyName') 
+
+        #-----------获取所有签到位置信息----------
+        signInfo = SignSetInfo.filter(SignSetInfo.Company==companyId)
+        array_SignInfo = []
+        for item in signInfo:
+            base = {"Id":item.Id,"SignName":item.SignName,"StartTime":item.StartTime,"EndTime":item.EndTime}
+            array_SignInfo.append(base)
+        return array_SignInfo
 
 ######### WEBAPP ROUTERS ###############
 if __name__ == '__main__':
@@ -611,6 +668,9 @@ if __name__ == '__main__':
     app.route('/manager/listleave/',method=['GET','POST'])(manager_leave)#请假管理
     app.route('/manager/edileave/<Id>/<showDetail>/',method=['GET','POST'])(edi_leave)
     app.route('/manager/delleave/<Id>/',method=['GET','POST'])(del_leave)
+
+    app.route('/manager/setSign/<Id>/<showDetail>/',method=['GET','POST'])(setSing)#签到设置
+    app.route('/manager/delsign/<Id>/',method=['GET','POST'])(deleteSing)
     
     
 

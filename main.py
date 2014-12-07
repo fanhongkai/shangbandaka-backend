@@ -233,7 +233,7 @@ def manager_report():
     """
     查看打卡报表
     """
-    data=[]
+    
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName') 
@@ -246,30 +246,79 @@ def manager_report():
     #---------获取签到位置信息-------
 
     SingInfo = baseClass().getSingInfo()#调用类
-
+    
     #---------end--------------------
+
+    data=[]
     data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
 
     for item in data_employees:        
         base = {"Id":item.Id,"Name":item.Name,"Position":item.Position}
-        getRegistByEmployeesId = RegistrationInfo.select().where(RegistrationInfo.Company == companyId and RegistrationInfo.EmployeesId == item.Id)
-        base['WorkStatus'] = ''
-        base['SingTime'] = ''   
-        base['location'] = ''
-        for emp in getRegistByEmployeesId:
-            if not emp.WorkStatus =='' and emp.SingTime is None and emp.location is None:
+        getRegistByEmployeesId = RegistrationInfo.filter(RegistrationInfo.Company == companyId and RegistrationInfo.EmployeesId == item.Id)
+        base['WorkStatus'] = '未签到'
+        base['SingTime'] = '-'   
+        base['location'] = '-'
+        if not getRegistByEmployeesId is None:            
+            for emp in getRegistByEmployeesId: 
                 base['WorkStatus'] = emp.WorkStatus
                 base['SingTime'] = emp.SingTime   
-                base['location'] = emp.location 
+                base['location'] = emp.location
         data.append(base)
 
     return template(root+"/templates/report.tpl",SingInfo = SingInfo,array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def manager_setting():
     """
-    查看打卡报表
+    设置
     """
     return template(root+"/templates/venderpage/setting.tpl",op_status='')
+
+
+
+def setSing(Id,showDetail):
+    """
+    签到设置
+    """
+    app_session = bottle.request.environ.get('beaker.session')
+    companyId = app_session.get('company')
+    companyName = app_session.get('companyName') 
+    
+    if showDetail=='true': #编辑
+
+        data_singInfo = SignSetInfo.filter(SignSetInfo.Company == companyId and SignSetInfo.Id == Id)
+        
+        for item in data_singInfo:
+            data = {"Id":item.Id,"StartTime":item.StartTime,"EndTime":item.EndTime,"SignName":item.SignName}
+            
+        form = request.forms
+        if form.submit:
+            SignSetInfo.update(StartTime=form.startTime,EndTime=form.endTime,SignName = form.suggestId,location=form.PutText).where(SignSetInfo.Id==int(Id)).execute()
+            redirect("/manager/report/")
+
+        return template(root+"/templates/setSing.tpl",showDetail=True,templatedir=root+'/templates/',data=data,companyName=companyName)
+    else:       #添加
+        form = request.forms
+        if form.submit:
+           
+            
+            new_singInfo = SignSetInfo()            
+            new_singInfo.Company = companyId
+            new_singInfo.StartTime = form.startTime
+            new_singInfo.EndTime = form.endTime
+            new_singInfo.SignName = form.suggestId
+            new_singInfo.location = form.PutText
+            new_singInfo.save(force_insert=True)
+            redirect("/manager/report/")            
+
+    return template(root+"/templates/setSing.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
+
+def  deleteSing(Id):
+    
+    sign = SignSetInfo.get(Id=Id)
+    if not sign is None:
+        sign.delete_instance()
+        return {"State":"success"}
+
 
 
 #----------------------------------------------部门信息管理-------------------------------------
@@ -338,16 +387,36 @@ def del_department(Id):     #删除部门信息
         return {"State":"success"}
 
 #---------------------------------------------员工信息管理--------------------------------------
+def manager_listEmployeesBydepart(Id):
+    """
+    根据部门查询
+    """
+    app_session = bottle.request.environ.get('beaker.session')
+    companyId = app_session.get('company')
+    companyName = app_session.get('companyName')
 
+    #---------获取部门列表-----------
+    
+    array_depart = baseClass().getdepart()#调用类
+    
+    #------------end-------------
+    data = []
+    data_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId and EmployeesInfo.Department ==Id)
+    for item in data_em:
+        base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
+        get_depart = DepartmentInfo.filter(DepartmentInfo.Id == item.Department)
+        base['department'] = ''
+        for depar in get_depart:
+            if not depar.Name == '':
+                base['department'] = depar.Name
+        data.append(base)
+            
+    return template(root+"/templates/listEmployess.tpl",array_depart = array_depart,templatedir = root+'/templates/',data=data,companyName=companyName)
 
 def manager_listEmployees(): #员工列表
     """
     员工列表
     """
-
-   
-
-    data = []
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
     companyName = app_session.get('companyName')
@@ -357,11 +426,11 @@ def manager_listEmployees(): #员工列表
     array_depart = baseClass().getdepart()#调用类
     
     #------------end-------------
-
+    data = []
     get_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
     for item in get_em:
         base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
-        get_depart = DepartmentInfo.select().where(DepartmentInfo.Id == item.Department and DepartmentInfo.Company==companyId)
+        get_depart = DepartmentInfo.filter(DepartmentInfo.Id == item.Department)
         base['department'] = ''
         for depar in get_depart:
             if not depar.Name == '':
@@ -412,7 +481,8 @@ def edi_employees(Id,showDetail):  #员工信息管理
             employe.LoginName = form.Phone            
             employe.LoginPwd = md5.new("123456").hexdigest()
             employe.Company = companyId
-            employe.Department = form.department            
+            employe.Department = form.department   
+            print [form.department]     
             employe.Sex = form.Sex           
             employe.IdCard = form.IdCard            
             employe.Phone = form.Phone            
@@ -438,6 +508,11 @@ def manager_leave():
     """ 
     请假列表 
     """
+    #---------获取部门列表-----------
+    
+    array_depart = baseClass().getdepart()#调用类
+    
+    #------------end-------------
     data = []
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
@@ -451,7 +526,7 @@ def manager_leave():
             base['Sex'] = getEmp_name.Sex
             base['Phone'] = getEmp_name.Phone
             data.append(base)
-    return template(root+"/templates/listleave.tpl",templatedir=root+'/templates/',data=data,companyName=companyName)
+    return template(root+"/templates/listleave.tpl",templatedir=root+'/templates/',array_depart=array_depart,data=data,companyName=companyName)
 
 def edi_leave(Id,showDetail):
     """
@@ -484,54 +559,12 @@ def del_leave(Id):
     if not leave is None:
         leave.delete_instance()
         return {"State":"success"}
-#-------------------------------------------------签到设置---------------------------------------
 
-def setSing(Id,showDetail):
-    """
-    签到设置
-    """
-    app_session = bottle.request.environ.get('beaker.session')
-    companyId = app_session.get('company')
-    companyName = app_session.get('companyName') 
-    
-    if showDetail=='true': #编辑
 
-        data_singInfo = SignSetInfo.filter(SignSetInfo.Company == companyId and SignSetInfo.Id == Id)
-        
-        for item in data_singInfo:
-            data = {"Id":item.Id,"StartTime":item.StartTime,"EndTime":item.EndTime,"SignName":item.SignName}
-            
-        form = request.forms
-        if form.submit:
-            SignSetInfo.update(StartTime=form.startTime,EndTime=form.endTime,SignName = form.suggestId,location=form.PutText).where(SignSetInfo.Id==int(Id)).execute()
-            redirect("/manager/report/")
-
-        return template(root+"/templates/setSing.tpl",showDetail=True,templatedir=root+'/templates/',data=data,companyName=companyName)
-    else:       #添加
-        form = request.forms
-        if form.submit:
-           
-            
-            new_singInfo = SignSetInfo()            
-            new_singInfo.Company = companyId
-            new_singInfo.StartTime = form.startTime
-            new_singInfo.EndTime = form.endTime
-            new_singInfo.SignName = form.suggestId
-            new_singInfo.location = form.PutText
-            new_singInfo.save(force_insert=True)
-            redirect("/manager/report/")            
-
-    return template(root+"/templates/setSing.tpl",showDetail=False,templatedir=root+'/templates/',companyName=companyName)
-
-def  deleteSing(Id):
-    
-    sign = SignSetInfo.get(Id=Id)
-    if not sign is None:
-        sign.delete_instance()
-        return {"State":"success"}
 
 
 #-------------------------------------------------API接口----------------------------------------
+
 def api():
     """
     APP的API接口概述
@@ -664,6 +697,7 @@ if __name__ == '__main__':
     app.route('/manager/listemployees/', method=['GET','POST'])(manager_listEmployees)#员工管理
     app.route('/manager/ediemployees/<Id>/<showDetail>/',method=['POST','GET'])(edi_employees)
     app.route('/manager/delemployees/<Id>/',method=['GET','POST'])(del_employees)
+    app.route('/manager/listemployees/<Id>/',method = ['GET','POST'])(manager_listEmployeesBydepart)#根据部门查询员工
 
     app.route('/manager/listleave/',method=['GET','POST'])(manager_leave)#请假管理
     app.route('/manager/edileave/<Id>/<showDetail>/',method=['GET','POST'])(edi_leave)

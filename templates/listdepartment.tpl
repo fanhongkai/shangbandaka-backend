@@ -42,7 +42,7 @@
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>名称</th>
+                  <th>部门</th>
                   <th>电话</th>
                   <th>部门经理</th>                 
                   <th>操作</th>             
@@ -65,14 +65,7 @@
             </table>
           </div>
 
-          <div style='text-align:center;margin:0px auto'>
-            <div class="btn-group">
-            <button type="button" class="btn btn-default">1</button>
-            <button type="button" class="btn btn-default">2</button>
-            <button type="button" class="btn btn-default">3</button>
-            <button type="button" class="btn btn-default">4</button>
-            </div>
-          </div>
+          
 
           <br />
           <br />

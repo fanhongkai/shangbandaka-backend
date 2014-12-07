@@ -28,17 +28,15 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">全部</a></li>
-            <li><a href="#">开发</a></li>
-            <li><a href="#">市场</a></li>
-            <li><a href="#">销售</a></li>
-            <li><a href="#">&nbsp;</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>
+            %for depart in array_depart:
+              <li><a href="#">{{depart['Name']}}</a></li>
+            %end            
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">{{companyName}}</h1>
           <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped" id="example">
               <thead>
                 <tr>
                   <th>姓名</th>
@@ -64,7 +62,7 @@
                           %else:
                               <td>未批准</td>
                               <td>
-                                <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)"><span class="glyphicon glyphicon-pencil"></span>编辑</button>
+                                <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)"><span class="glyphicon glyphicon-pencil"></span>审核</button>
                             <button type="button" class="btn" onclick="del({{d['Id']}})">
                               <span class="glyphicon glyphicon-remove"></span>删除</button>
                               </td>
@@ -75,14 +73,7 @@
               </tbody>
             </table>
           </div>
-          <div style='text-align:center;margin:0px auto'>
-            <div class="btn-group">
-            <button type="button" class="btn btn-default">1</button>
-            <button type="button" class="btn btn-default">2</button>
-            <button type="button" class="btn btn-default">3</button>
-            <button type="button" class="btn btn-default">4</button>
-            </div>
-          </div>
+         
           <br />
           <br />
           <hr class="half-rule" />
@@ -97,6 +88,53 @@
     <div class="modal js-loading-bar"></div>
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- dataTable 插件-->
+    <script src="/assets/js/jquery.dataTables.min.js"></script>
+    <style type="text/css" title="currentStyle">
+        @import "/assets/css/jquery.dataTables.min.css";
+    </style>
+
+    <!-- end -->
+    <!-- dataTable 插件配置 -->
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#example').dataTable(
+            {
+              "language": {
+                      "lengthMenu": "每页显示 _MENU_ 条",
+                      "sProcessing": "&lt;img src=’/assets/loading.gif’ /&gt;",
+                      "zeroRecords": "没有找到符合条件的数据",
+                      "info": "当前第 _PAGE_ 页总共 _PAGES_页",
+                      "infoEmpty": "No records available",
+                      "infoFiltered": "(filtered from _MAX_ total records)",
+                      "sSearch": "查找：",
+                      "oPaginate": 
+                      {
+                        "sFirst": "首页",
+                        "sPrevious": "前一页",
+                        "sNext": "后一页",
+                        "sLast": "尾页"
+                      }
+
+                  }
+            }
+
+          );
+
+      });
+    </script>
+    <style type="text/css">
+        table.dataTable thead th, table.dataTable thead td {
+        padding: 10px 18px;
+        border-bottom: 1px solid #E8E8E8;
+        }
+        table.dataTable.no-footer {
+          border-bottom: 1px solid #E8E8E8;
+        }
+
+    </style>
+ <!-- end -->
   </body>
 </html>
 <script type="text/javascript">

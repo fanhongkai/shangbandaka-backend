@@ -23,9 +23,9 @@
             <li><a href="/manager/">注销</a></li>
             <li><a href="/manager/help/">帮助</a></li>
           </ul>
-          <form class="navbar-form navbar-right">
+          <!-- <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="员工姓名">
-          </form>
+          </form> -->
         </div>
 
       </div><!-- /.container -->

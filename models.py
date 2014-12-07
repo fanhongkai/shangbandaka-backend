@@ -37,7 +37,7 @@ def init_tables():
     EmployeesInfo.insert(Id=2,Name='李四',LoginName='lisi',LoginPwd='e10adc3949ba59abbe56e057f20f883e',Company=1,Department=1,Sex='男',IdCard='452229199406235119',Phone='18777452591',Email='1425412316@qq.com',Position='员工',Imei='xacdcooccos').execute()
     ManagerInfo.insert(LoginName='userAdmin',LoginPswd='e10adc3949ba59abbe56e057f20f883e',Name='李四',LastLoginData='2014-11-09 10:00:00').execute()
     SignSetInfo.insert(Company=1,StartTime='8:00',EndTime='9:00',SignName='优趣天下',location='129,126').execute()
-    RegistrationInfo.insert(EmployeesId=1,Company=1,WorkStatus='正常上班',location='129,126').execute()
+    RegistrationInfo.insert(EmployeesId=1,Company=1,WorkStatus='正常上班',SingTime='2014-12-07 08:30:00',location='129,126').execute()
     LeaveInfo.insert(EmployeesId=1,Company=1,StartTime='2014-11-09',PeriodTime='2014-11-10',EndTime='2014-11-11',Reason='请假过双11',ActTime='2014-11-09 10:00:00',reMsg='这样你也请假？',Agree=False).execute()
     
 class BaseModel(peewee.Model):

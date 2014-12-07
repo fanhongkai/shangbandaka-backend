@@ -51,7 +51,7 @@
                             <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
                               <li><a href="/manager/setSign/{{item["Id"]}}/true/"><i class="icon-pencil"></i> 编辑</a></li>
-                              <li><a onclick="del({{item['Id']}})"><i class="icon-trash"></i> 删除</a></li>
+                              <li><a href="#" onclick="del({{item['Id']}})"><i class="icon-trash"></i> 删除</a></li>
                             </ul>
                         </div>
                       </div>
@@ -91,7 +91,7 @@
             </select>
           </h2>
           <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped" id="example">
               <thead>
                 <tr>
                   <th>位置</th>
@@ -105,39 +105,18 @@
               <tbody>                
                     %for d in data:
                         <tr>
-                          %if d['location']=='':
-                              <td>-</td>
-                          %else:
-                              <td>{{ d['location']}}</td>
-                          %end
-                         
-                          <td>{{ d['Name'] }}</td>
-                          <td>{{ d['Position']}}</td>
-                          %if d['WorkStatus']=='':
-                              <td>-</td>
-                          %else:
-                              <td>{{ d['WorkStatus']}}</td>
-                          %end
-
-                          %if d['SingTime']=='':
-                              <td>-</td>
-                          %else:
-                              <td>{{ d['SingTime']}}</td>
-                          %end
                           
+                          <td>{{ d['location']}}</td>
+                          <td>{{ d['Name'] }}</td>
+                          <td>{{ d['Position']}}</td>                         
+                          <td>{{d['WorkStatus']}}</td>
+                          <td>{{ d['SingTime']}}</td>
                         </tr>
                     %end
               </tbody>
             </table>
           </div>
-          <div style='text-align:center;margin:0px auto'>
-            <div class="btn-group">
-            <button type="button" class="btn btn-default">1</button>
-            <button type="button" class="btn btn-default">2</button>
-            <button type="button" class="btn btn-default">3</button>
-            <button type="button" class="btn btn-default">4</button>
-            </div>
-          </div>
+          
           <br />
           <br />
           <hr class="half-rule" />
@@ -152,6 +131,54 @@
     <div class="modal js-loading-bar"></div>
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+
+
+    <!-- dataTable 插件-->
+    <script src="/assets/js/jquery.dataTables.min.js"></script>
+    <style type="text/css" title="currentStyle">
+        @import "/assets/css/jquery.dataTables.min.css";
+    </style>
+
+    <!-- end -->
+    <!-- dataTable 插件配置 -->
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#example').dataTable(
+            {
+              "language": {
+                      "lengthMenu": "每页显示 _MENU_ 条",
+                      "sProcessing": "&lt;img src=’/assets/loading.gif’ /&gt;",
+                      "zeroRecords": "没有找到符合条件的数据",
+                      "info": "当前第 _PAGE_ 页总共 _PAGES_页",
+                      "infoEmpty": "No records available",
+                      "infoFiltered": "(filtered from _MAX_ total records)",
+                      "sSearch": "查找：",
+                      "oPaginate": 
+                      {
+                        "sFirst": "首页",
+                        "sPrevious": "前一页",
+                        "sNext": "后一页",
+                        "sLast": "尾页"
+                      }
+
+                  }
+            }
+
+          );
+
+      });
+    </script>
+    <style type="text/css">
+        table.dataTable thead th, table.dataTable thead td {
+        padding: 10px 18px;
+        border-bottom: 1px solid #E8E8E8;
+        }
+        table.dataTable.no-footer {
+          border-bottom: 1px solid #E8E8E8;
+        }
+
+    </style>
+ <!-- end -->
   </body>
 </html>
 <script type="text/javascript">

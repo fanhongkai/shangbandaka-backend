@@ -62,11 +62,9 @@
                 <div class="form-item">
                     <label for="name">部门</label>
                     <div> 
-                      <select value="" name="department" Id="department" style="width:170px;">
-                          %for depart in array_depart:
-                              
+                      <select name="department" Id="department" style="width:170px;">
+                          %for depart in array_depart:                              
                                 <option value="{{depart['Id']}}">{{depart['Name']}}</option>
-                             
                           %end
                       </select>
                     </div>           

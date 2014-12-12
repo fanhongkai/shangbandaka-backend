@@ -116,7 +116,7 @@ class RegistrationInfo(BaseModel):#签到
         Company=peewee.IntegerField()#--公司id
         EmployeesId=peewee.IntegerField()#--员工编号        
         WorkStatus=peewee.CharField(max_length=10)
-        SingTime=peewee.DateTimeField(default=datetime.datetime.now)
+        SingTime=peewee.DateTimeField()
         location=peewee.CharField(max_length=50)
         
         def __unicode__(self):

@@ -530,7 +530,7 @@ def manager_leave():
 
 def edi_leave(Id,showDetail):
     """
-    请假编辑与添加
+    请假编辑
     """
     app_session = bottle.request.environ.get('beaker.session')
     companyId = app_session.get('company')
@@ -601,10 +601,129 @@ def api_register():
 
     return dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
 
-def mlogin():
-    response.content_type = 'application/json'
-    return dumps({"errno":"0", "msg":"", "ret": {"id":10001, "token":"a234dsaz"}})
-    #return dumps({"errno":"1", "msg":"Fail to login, please check your username or password", "ret": {}})
+def mlogin(username,passwd):
+    """
+    API登录
+    """
+    user = EmployeesInfo.getOne(loginName = username)
+    passwd_md5 = str(md5.new(passwd).hexdigest())#md5加密，32位
+    if not user is None:
+        if passwd_md5 == user.loginPwd:
+            token = passwd + str(datetime.datetime.now())+ "_" + user.Id + "_" + user.Company
+            return {"msg":"成功","error":"0","token":token,"Cname":user.companyName}
+        else:
+            return {"msg":"用户名或密码错误","error":"1"}
+    else:
+        return {"msg":"不存在%S的账号" % username,"error":"1"}
+def api_registration(token,lat,lon):
+    """
+    签到
+    """
+
+    #---------所需数据数据
+    # token ------员工编号（Id）+公司编号 ，其中员工编号与公司编号之间用（_）隔开
+    # lat --------纬度
+    # lon --------经度    
+
+    #-----------------设计思路---------------
+    #（1）点到圆心的距离小于半径就说明在圆内，就可以签到    
+    #（2）设置半径半径为5米
+    #（3）坐标点的距离公式为：√[(x1-x2)²+(y1-y2)²] 转换成编程语言就是 (x1-x2)²+(y1-y2)² 与 r^2的关系
+    #（4）查询数据表中是否存在当天的签到记录（不能重复签到）
+    #（5）判断是否是在指定地点附近内签到（半径），读取所有的设置签到地点。然后判断。。。。
+    #（6）判断时间，如果在指定时间内签到，则表示正常签到。如果超过了指定时间签到表示迟到。
+    #-----------------end---------------------
+
+    #-----------------获取传值数据
+    #公司编号
+    companyId = token.split("_")[0]
+
+    #员工编号
+    employe = token.split("_")[1]    
+    
+    #半径
+    r = 5
+    #查询数据表，如果已经在当天签到，则不能再签到
+    #获取当前时间
+    time_now = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+    #将当前时间转换成指定格式
+    time_now_fomat = time.strptime(time_now,"%Y-%m-%d %H:%M:%S")
+
+    time_24 =str(time.strftime("%Y-%m-%d",time.localtime())) + " " + "24:00:00"
+    time_24_format = time.strptime(time_24,"%Y-%m-%d %H:%M:%S")
+
+    get_today = RegistrationInfo.filter(EmployeesId =employe and time.strptime(SingTime,"%Y-%m-%d") > time_now_fomat and time_24_format > time.strptime(SingTime,"%Y-%m-%d"))
+    if get_today is None:
+        #一、获取设置坐标
+        get_setSign = SignSetInfo.filter(Company = companyId)
+        distance = 0
+        for sign in get_setSign:
+            la = sign[location].split(",")[0] 
+            ln = sign[location].split(",")[1]
+            distance = (lat-la)*(lat-la) + (lon-ln)*(lon-ln)
+            if distance < r * r:
+                #签到成功
+                #判断签到时间是否在设置签到时间内，
+                #一。超过了指定时间-------迟到
+                #二。在指定时间内--------正常签到
+               
+                start_time = str(time.strftime("%Y-%m-%d",time.localtime())) + " " + str(sign["StartTime"])
+                #将开始签到时间转换成时间格式
+                sign_time_conver = time.strptime(start_time,"%Y-%m-%d %H:%M:%S")
+                #结束签到时间
+                end_time = str(time.strftime("%Y-%m-%d",time.localtime())) + " " + str(sign["EndTime"])
+
+                if time_fomat > sign_time_conver and time_fomat < endTime:                
+                    Registration = RegistrationInfo()
+                    Registration.Company = companyId
+                    Registration.EmployeesId = employe
+                    Registration.WorkStatus = "正常签到"
+                    Registration.SingTime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+                    Registration.location = sign["SignName"]
+                    return {"msg":"签到成功","error":"0"}
+                   
+                elif time_fomat > endTime:
+                    Registration = RegistrationInfo()
+                    Registration.Company = companyId
+                    Registration.EmployeesId = employe
+                    Registration.WorkStatus = "迟到"
+                    Registration.SingTime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+                    Registration.location = sign["SignName"]
+                    return {"msg":"你已经迟到啦","error":"0"}
+                break
+
+            else:
+                return {"msg":"请到指定地点签到哦","error":"0"}
+    else:
+        return {"msg":"你已经签到","error":"0"}
+
+    
+
+def api_leave(token,settime,reason):
+
+    #---------所需数据数据
+    # token ------员工编号（Id）+公司编号 ，其中员工编号与公司编号之间用（_）隔开
+    # lat --------纬度
+    # lon --------经度    
+    employe = token.split('_')[0]   #员工编号
+    companyId = token.split('_')[1] #公司编号
+    
+
+    startTime = settime.split('_')[0]#请假第一天
+    periodTime = settime.split('_')[1]#请假第二天    
+    endTime = settime.split('_')[2]#请假第三天
+          
+    leave = LeaveInfo()
+    leave.Company = companyId
+    leave.EmployeesId = employe
+    leave.StartTime =  time.strptime(startTime,"%Y-%m-%d %H:%M:%S")
+    leave.PeriodTime = time.strptime(periodTime,"%Y-%m-%d %H:%M:%S")
+    leave.EndTime = time.strptime(endTime,"%Y-%m-%d %H:%M:%S")
+    leave.Reason = reason
+    leave.reMsg = ''
+    leave.Agree = False
+    leave.save(force_insert = True)
+    return {"msg":"请假成功","error":"0"}
 
 def reimei():
     response.content_type = 'application/json'
@@ -715,7 +834,9 @@ if __name__ == '__main__':
 
 
     app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
-    app.route('/api/mlogin', method=['GET','POST','HEAD'])(mlogin)
+    app.route('/api/mlogin/<username>/<passwd>', method=['GET','POST','HEAD'])(mlogin)
+    app.route('/api/registration/<token>/<lat>/<lon>', method = ['GET','POST'])(api_registration)
+    app.route('/api/leave/<token>/<settime>/<reason>',method = ['POST'])(api_leave)
     app.route('/api/initimei', method=['GET','POST','HEAD'])(initimei)
     app.route('/api/getuserdata', method=['GET','POST','HEAD'])(getuserdata)
     

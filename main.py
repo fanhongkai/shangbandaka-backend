@@ -11,12 +11,13 @@
 import os
 import md5
 import bottle
+from peewee import DateTimeField
 from bottle import Bottle, ServerAdapter
 from bottle import run, debug, route, error, static_file, template,request,response,redirect
 from models import CompanyInfo,DepartmentInfo,EmployeesInfo,ManagerInfo,SignSetInfo,RegistrationInfo,LeaveInfo,create_tables,init_tables
 import time
 import sys
-import datetime
+from datetime import *
 import json
 
 from beaker.middleware import SessionMiddleware
@@ -248,13 +249,19 @@ def manager_report():
     SingInfo = baseClass().getSingInfo()#调用类
     
     #---------end--------------------
+    time_0 = str(date.today()) + " " + "01:00:00"
+    time_0_format = datetime.strptime(time_0,"%Y-%m-%d %H:%M:%S")
+    
+    time_24 =str(date.today())+ " " + "23:59:59"
+    
+    time_24_format = datetime.strptime(time_24,"%Y-%m-%d %H:%M:%S")
 
     data=[]
     data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
 
     for item in data_employees:        
         base = {"Id":item.Id,"Name":item.Name,"Position":item.Position}
-        getRegistByEmployeesId = RegistrationInfo.filter(RegistrationInfo.Company == companyId and RegistrationInfo.EmployeesId == item.Id)
+        getRegistByEmployeesId = RegistrationInfo.filter(RegistrationInfo.Company == companyId).filter(RegistrationInfo.EmployeesId == item.Id).filter(RegistrationInfo.SingTime > time_0_format ).filter(RegistrationInfo.SingTime < time_24_format) 
         base['WorkStatus'] = '未签到'
         base['SingTime'] = '-'   
         base['location'] = '-'
@@ -266,6 +273,45 @@ def manager_report():
         data.append(base)
 
     return template(root+"/templates/report.tpl",SingInfo = SingInfo,array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
+
+def manager_reportbytime(selecttime):
+
+    app_session = bottle.request.environ.get('beaker.session')
+    companyId = app_session.get('company')
+    companyName = app_session.get('companyName') 
+    
+    #---------获取部门列表-----------
+    array_depart = baseClass().getdepart()#调用类
+
+    #------------end-------------   
+    time_0 =str(selecttime) + " " + "01:00:00"
+    time_0_format = datetime.strptime(time_0,"%Y-%m-%d %H:%M:%S")
+    
+    time_24 =str(selecttime) + " " + "23:59:59"
+    
+    time_24_format = datetime.strptime(time_24,"%Y-%m-%d %H:%M:%S")
+    
+   
+
+    data=[]
+    data_employees = EmployeesInfo.filter(EmployeesInfo.Company == companyId)
+    
+    for item in data_employees:        
+        base = {"Id":item.Id,"Name":item.Name,"Position":item.Position}
+        
+        getRegistByEmployeesId = RegistrationInfo.filter(RegistrationInfo.Company == companyId).filter(RegistrationInfo.EmployeesId == item.Id).filter(RegistrationInfo.SingTime > time_0_format ).filter(RegistrationInfo.SingTime < time_24_format) 
+
+        base['WorkStatus'] = '未签到'
+        base['SingTime'] = '-'   
+        base['location'] = '-'
+        if not getRegistByEmployeesId is None:            
+            for emp in getRegistByEmployeesId: 
+                base['WorkStatus'] = emp.WorkStatus
+                base['SingTime'] = emp.SingTime   
+                base['location'] = emp.location
+        data.append(base)
+
+    return template(root+"/templates/reportbytime.tpl",selecttime = selecttime,array_depart = array_depart,templatedir=root+'/templates/',data=data,companyName=companyName)
 
 def manager_setting():
     """
@@ -285,7 +331,7 @@ def setSing(Id,showDetail):
     
     if showDetail=='true': #编辑
 
-        data_singInfo = SignSetInfo.filter(SignSetInfo.Company == companyId and SignSetInfo.Id == Id)
+        data_singInfo = SignSetInfo.filter(SignSetInfo.Company == companyId).filter(SignSetInfo.Id == Id)
         
         for item in data_singInfo:
             data = {"Id":item.Id,"StartTime":item.StartTime,"EndTime":item.EndTime,"SignName":item.SignName}
@@ -317,7 +363,7 @@ def  deleteSing(Id):
     sign = SignSetInfo.get(Id=Id)
     if not sign is None:
         sign.delete_instance()
-        return {"State":"success"}
+        return json.dumps({"State":"success"})
 
 
 
@@ -348,7 +394,7 @@ def edi_department(Id,showDetail):
     
     if showDetail =='true': #编辑部门信息
 
-        get_data = DepartmentInfo.filter(DepartmentInfo.Company==companyId and DepartmentInfo.Id==Id)
+        get_data = DepartmentInfo.filter(DepartmentInfo.Company==companyId).filter(DepartmentInfo.Id==Id)
         for d in get_data:
             data = {"Id":d.Id,"Name":d.Name,"Phone":d.Phone,"Leader":d.Leader}
         form = request.forms        
@@ -384,7 +430,7 @@ def del_department(Id):     #删除部门信息
     depart = DepartmentInfo.get(Id = Id)  
     if not depart is None:  
         depart.delete_instance()
-        return {"State":"success"}
+        return json.dumps({"State":"success"})
 
 #---------------------------------------------员工信息管理--------------------------------------
 def manager_listEmployeesBydepart(Id):
@@ -401,7 +447,7 @@ def manager_listEmployeesBydepart(Id):
     
     #------------end-------------
     data = []
-    data_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId and EmployeesInfo.Department ==Id)
+    data_em = EmployeesInfo.filter(EmployeesInfo.Company == companyId).filter(EmployeesInfo.Department ==Id)
     for item in data_em:
         base = {"Id": item.Id,'Name':item.Name,'Sex':item.Sex,'Phone':item.Phone,'Email':item.Email,'Position':item.Position}
         get_depart = DepartmentInfo.filter(DepartmentInfo.Id == item.Department)
@@ -458,7 +504,7 @@ def edi_employees(Id,showDetail):  #员工信息管理
     #------------end-------------
 
     if showDetail =='true':
-        data_employ = EmployeesInfo.filter(EmployeesInfo.Company==companyId and EmployeesInfo.Id==Id)
+        data_employ = EmployeesInfo.filter(EmployeesInfo.Company==companyId).filter(EmployeesInfo.Id==Id)
         for item in data_employ:
             data = {"Id":item.Id,"Name":item.Name,"Department":item.Department,"Sex":item.Sex,"IdCard":item.IdCard,"Phone":item.Phone,"Email":item.Email,"Position":item.Position}
         
@@ -501,7 +547,7 @@ def del_employees(Id):  #删除员工信息
     employe = EmployeesInfo.get(Id=Id)
     if not employe is None:
         employe.delete_instance()        
-        return {"State":"success"}
+        return json.dumps({"State":"success"})
 
 #----------------------------------------请假管理--------------------------------------------
 def manager_leave():
@@ -537,14 +583,18 @@ def edi_leave(Id,showDetail):
     companyName = app_session.get('companyName')
     
     if showDetail =='true':        
-        data_leave = LeaveInfo.filter(LeaveInfo.Company == companyId and LeaveInfo.Id == Id)
+        data_leave = LeaveInfo.filter(LeaveInfo.Company == companyId).filter(LeaveInfo.Id == Id)
         for item in data_leave:
             getEmployeesById = EmployeesInfo.filter(EmployeesInfo.Id == item.EmployeesId)
             for employe in getEmployeesById:
                 data = {"Id":item.Id,"StartTime":item.StartTime,"Reason":item.Reason,"Agree":item.Agree,"Name":employe.Name,"Sex":employe.Sex}
          
-        form =request.forms        
-        if form.submit:
+        form =request.forms
+        if form.reject: #驳回
+            LeaveInfo.update(Agree = False,reMsg = form.reMsg).where(LeaveInfo.Id==int(Id)).execute()
+            redirect("/manager/listleave/")  
+        
+        if form.submit: #批准
             LeaveInfo.update(Agree = True,reMsg = form.reMsg).where(LeaveInfo.Id==int(Id)).execute()
             redirect("/manager/listleave/")  
 
@@ -558,7 +608,7 @@ def del_leave(Id):
     leave = LeaveInfo.get(Id=Id)
     if not leave is None:
         leave.delete_instance()
-        return {"State":"success"}
+        return json.dumps({"State":"success"})
 
 
 
@@ -599,7 +649,7 @@ def api_register():
     print (company_code,department,name,number,phoneid)
     response.content_type = 'application/json'
 
-    return dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
+    return json.dumps({"err":"0", "msg":"ok", "token":"XXXX-AAABBB"})
 
 def mlogin(username,passwd):
     """
@@ -610,11 +660,11 @@ def mlogin(username,passwd):
     if not user is None:
         if passwd_md5 == user.loginPwd:
             token = passwd + str(datetime.datetime.now())+ "_" + user.Id + "_" + user.Company
-            return {"msg":"成功","error":"0","token":token,"Cname":user.companyName}
+            return json.dumps({"msg":"成功","error":"0","token":token,"Cname":user.companyName})
         else:
-            return {"msg":"用户名或密码错误","error":"1"}
+            return json.dumps({"msg":"用户名或密码错误","error":"1"})
     else:
-        return {"msg":"不存在%S的账号" % username,"error":"1"}
+        return json.dumps({"msg":"不存在%S的账号" % username,"error":"1"})
 def api_registration(token,lat,lon):
     """
     签到
@@ -645,17 +695,17 @@ def api_registration(token,lat,lon):
     r = 5
     #查询数据表，如果已经在当天签到，则不能再签到
     #获取当前时间
-    time_now = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
-    #将当前时间转换成指定格式
-    time_now_fomat = time.strptime(time_now,"%Y-%m-%d %H:%M:%S")
+    time_0 = str(date.today()) + " " + "01:00:00"
+    time_0_format = datetime.strptime(time_0,"%Y-%m-%d %H:%M:%S")
+    
+    time_24 =str(date.today())+ " " + "23:59:59"
+    
+    time_24_format = datetime.strptime(time_24,"%Y-%m-%d %H:%M:%S")
 
-    time_24 =str(time.strftime("%Y-%m-%d",time.localtime())) + " " + "24:00:00"
-    time_24_format = time.strptime(time_24,"%Y-%m-%d %H:%M:%S")
-
-    get_today = RegistrationInfo.filter(EmployeesId =employe and time.strptime(SingTime,"%Y-%m-%d") > time_now_fomat and time_24_format > time.strptime(SingTime,"%Y-%m-%d"))
+    get_today = RegistrationInfo.filter(RegistrationInfo.Company == companyId).filter(RegistrationInfo.EmployeesId == employe).filter(RegistrationInfo.SingTime > time_0_format ).filter(RegistrationInfo.SingTime < time_24_format) 
     if get_today is None:
         #一、获取设置坐标
-        get_setSign = SignSetInfo.filter(Company = companyId)
+        get_setSign = SignSetInfo.filter(SignSetInfo.Company == companyId)
         distance = 0
         for sign in get_setSign:
             la = sign[location].split(",")[0] 
@@ -680,7 +730,7 @@ def api_registration(token,lat,lon):
                     Registration.WorkStatus = "正常签到"
                     Registration.SingTime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
                     Registration.location = sign["SignName"]
-                    return {"msg":"签到成功","error":"0"}
+                    return json.dumps({"msg":"签到成功","error":"0"})
                    
                 elif time_fomat > endTime:
                     Registration = RegistrationInfo()
@@ -689,22 +739,23 @@ def api_registration(token,lat,lon):
                     Registration.WorkStatus = "迟到"
                     Registration.SingTime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
                     Registration.location = sign["SignName"]
-                    return {"msg":"你已经迟到啦","error":"0"}
+                    return json.dumps({"msg":"你已经迟到啦","error":"0"})
                 break
 
             else:
-                return {"msg":"请到指定地点签到哦","error":"0"}
+                return json.dumps({"msg":"请到指定地点签到哦","error":"0"})
     else:
-        return {"msg":"你已经签到","error":"0"}
+        return json.dumps({"msg":"你已经签到","error":"0"})
 
     
 
 def api_leave(token,settime,reason):
-
+    """
+    API请假
+    """
     #---------所需数据数据
     # token ------员工编号（Id）+公司编号 ，其中员工编号与公司编号之间用（_）隔开
-    # lat --------纬度
-    # lon --------经度    
+      
     employe = token.split('_')[0]   #员工编号
     companyId = token.split('_')[1] #公司编号
     
@@ -716,51 +767,16 @@ def api_leave(token,settime,reason):
     leave = LeaveInfo()
     leave.Company = companyId
     leave.EmployeesId = employe
-    leave.StartTime =  time.strptime(startTime,"%Y-%m-%d %H:%M:%S")
-    leave.PeriodTime = time.strptime(periodTime,"%Y-%m-%d %H:%M:%S")
-    leave.EndTime = time.strptime(endTime,"%Y-%m-%d %H:%M:%S")
+    leave.StartTime =  datetime.strptime(startTime,"%Y-%m-%d %H:%M:%S")
+    leave.PeriodTime = datetime.strptime(periodTime,"%Y-%m-%d %H:%M:%S")
+    leave.EndTime = datetime.strptime(endTime,"%Y-%m-%d %H:%M:%S")
     leave.Reason = reason
     leave.reMsg = ''
     leave.Agree = False
     leave.save(force_insert = True)
-    return {"msg":"请假成功","error":"0"}
-
-def reimei():
-    response.content_type = 'application/json'
-    return dumps({"errno":"0", "msg":"99000055201110"})
-    #return dumps({"errno":"-1", "msg":"couldn't get the imei"})
-def initimei():
-    response.content_type='application/json'
-    return dumps({"errno":"0","msg":"OK"})
-def getuserdata():
-    response.content_type='application/json'
-    return dumps({"errno":"0","ret":{"Id":100000,"LoginName":"admin","LoginPwd":"123456","CompanyId":1,"Department":1,"Phone":"18076598729"}})
-
-def api_checkin():
-    """
-    APP的Checkin接口
-
-    所需要的参数
-        token: 认证Token
-
-    返回
-        err : 错误代码
-        msg : 提示消息
-
-    1 验证数据
-    2 保存数据
-    3 返回提示
-    """
-    lat = request.POST.get('lat','').strip() #纬度
-    lng = request.POST.get('lng','').strip() #经度
-    token = request.POST.get('token','').strip()
-    phoneid = request.POST.get('phoneid','').strip()
-    #debug
-    print (lat,lng,token,phoneid)
+    return json.dumps({"msg":"请假成功","error":"0"})
 
 
-    response.content_type = 'application/json'
-    return dumps({"err":"0", "msg":"ok"})
 
 #------------------------------------------------类------------------------------------
 
@@ -807,6 +823,7 @@ if __name__ == '__main__':
     app.route('/manager/login/', method=['GET','POST'])(manager_login) #登录
     app.route('/manager/register/', method=['GET','POST'])(manager_register) #注册
     app.route('/manager/report/', method=['GET','HEAD'])(manager_report)    #报表
+    app.route('/manager/reportbytime/<selecttime>/',method=['GET','POST'])(manager_reportbytime)#根据时间查看报表
     app.route('/manager/setting/', method=['GET','HEAD'])(manager_setting)  #设置
 
     app.route('/manager/listdepartment/', method=['GET','POST'])(manager_Department) #部门管理
@@ -829,16 +846,11 @@ if __name__ == '__main__':
 
     app.route('/api/', method=['GET','HEAD'])(api)
     app.route('/api/register', method=['GET','POST','HEAD'])(api_register)
-    app.route('/api/checkin', method=['GET','POST','HEAD'])(api_checkin)
-
-
-
-    app.route('/api/reimei', method=['GET','POST','HEAD'])(reimei)
     app.route('/api/mlogin/<username>/<passwd>', method=['GET','POST','HEAD'])(mlogin)
     app.route('/api/registration/<token>/<lat>/<lon>', method = ['GET','POST'])(api_registration)
     app.route('/api/leave/<token>/<settime>/<reason>',method = ['POST'])(api_leave)
-    app.route('/api/initimei', method=['GET','POST','HEAD'])(initimei)
-    app.route('/api/getuserdata', method=['GET','POST','HEAD'])(getuserdata)
+    
+   
     
     app_with_session = SessionMiddleware(app, session_opts)
 

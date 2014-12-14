@@ -128,8 +128,9 @@
             return false;
         }
        var Phone = $("#Phone").val(); //部门电话
+       var re_call = /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/;
        var reg_phone = /^(((14[0-9]{1})|(18[0-9]{1})|(13[0-9]{1})|159|153)+\d{8})$/; //手机格式
-       if (Phone == '' || Phone == undefined || Phone == null || !reg_phone.test(Phone)) {
+       if (Phone == '' || Phone == undefined || Phone == null || !reg_phone.test(Phone) && !re_call.test(Phone)) {
             alert("请输入部门电话");
             $("#Phone").focus();
             return false;

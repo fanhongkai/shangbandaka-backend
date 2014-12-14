@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -16,7 +16,7 @@
 
   </head>
   <style type="text/css">
-    .navbar-inverse .navbar-nav>.company>a, .navbar-inverse .navbar-nav>.company>a:hover, .navbar-inverse .navbar-nav>.company>a:focus {
+    .navbar-inverse .navbar-nav>.regist>a, .navbar-inverse .navbar-nav>.regist>a:hover, .navbar-inverse .navbar-nav>.regist>a:focus {
        color: #fff;
        background-color: #080808;
     }
@@ -28,45 +28,44 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="/manager/listemployees/">全部</a></li>
+            <li class="active"><a href="#">全部</a></li>
             %for depart in array_depart:
-              <li><a href="/manager/listemployees/{{depart['Id']}}/">{{depart['Name']}}</a></li>
-            %end
-            <li><a href="/manager/ediemployees/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加员工</a></li>
-            <li><hr></li>
-            <li><a href="/manager/listdepartment/"><span class="glyphicon glyphicon-th-large"></span>&nbsp 部门管理</a></li>
-            <li><a href="/manager/edidepartment/0/false/"><span class="glyphicon glyphicon-plus"></span> 添加部门</a></li>            
+              <li><a href="#">{{depart['Name']}}</a></li>
+            %end            
           </ul>
+
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{{companyName}}</h1>          
+          <h1 class="page-header">{{companyName}}</h1>
+
+         
+
+          <h2 class="sub-header">
+            <label id="text">{{selecttime}}打卡情况</label>
+            <select style='float:right' onchange="setTime()" Id = "selectTime">              
+            </select>
+          </h2>
           <div class="table-responsive">
             <table class="table table-striped" id="example">
               <thead>
                 <tr>
+                  <th>位置</th>
                   <th>姓名</th>
-                  <th>性别</th>
-                  <th>部门</th>
                   <th>职务</th>
-                  <th>电话</th>   
-                  <th>Email</th>  
-                  <th>操作</th>             
+                  <th>出勤情况</th>
+                  <th>签到时间</th>   
+                         
                 </tr>
               </thead>
               <tbody>                
                     %for d in data:
                         <tr>
+                          
+                          <td>{{ d['location']}}</td>
                           <td>{{ d['Name'] }}</td>
-                          <td>{{ d['Sex'] }}</td>                          
-                          <td>{{ d['department']}}</td>                          
-                          <td>{{ d['Position'] }}</td>                          
-                          <td>{{ d['Phone'] }}</td>
-                          <td>{{ d['Email'] }}</td>
-                          <td>
-                            <button type="button" class="btn btn-primary" onclick="edit({{d['Id']}},true)"><span class="glyphicon glyphicon-pencil"></span>编辑</button>
-                            <button type="button" class="btn" onclick="del({{d['Id']}})">
-                              <span class="glyphicon glyphicon-remove"></span>删除</button>
-                          </td>
+                          <td>{{ d['Position']}}</td>                         
+                          <td>{{d['WorkStatus']}}</td>
+                          <td>{{ d['SingTime']}}</td>
                         </tr>
                     %end
               </tbody>
@@ -83,11 +82,12 @@
           </div>
         </div>
       </div>    
-    </div>
+    </div> 
     <div class="modal js-loading-bar"></div>
-
     <script src="/assets/static/jquery.min.js"></script>
     <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+
+
     <!-- dataTable 插件-->
     <script src="/assets/js/jquery.dataTables.min.js"></script>
     <style type="text/css" title="currentStyle">
@@ -123,7 +123,6 @@
 
       });
     </script>
-   
     <style type="text/css">
         table.dataTable thead th, table.dataTable thead td {
         padding: 10px 18px;
@@ -134,29 +133,72 @@
         }
 
     </style>
-    <!-- end -->
-
+ <!-- end -->
   </body>
 </html>
 <script type="text/javascript">
-    function edit(Id,showDetail){
-      location.href='/manager/ediemployees/'+Id+'/'+showDetail+'/';
-    }    
-    function del(Id){
-        $.getJSON("/manager/delemployees/"+Id+"/",function(data){
-            $.each(data,function(index,value){
-               if(value=="success"){
-                  alert("删除成功！")
-                  location.reload();
-               }
-               else{
-                  alert("删除失败！")
-               }
+    $(function () {
 
-            });
+        var option = '<option value="'+showOption(0)+'">' + showOption(0) + '</option>';
+        option += '<option value="' + showOption(-1) + '">' + showOption(-1) + '</option>';
+        option += '<option value="' + showOption(-2) + '">' + showOption(-2) + '</option>';
+        option += '<option value="' + showOption(-3) + '">' + showOption(-3) + '</option>';
+        option += '<option value="' + showOption(-4) + '">' + showOption(-4) + '</option>';
+        option += '<option value="' + showOption(-5) + '">' + showOption(-5) + '</option>';
+        option += '<option value="' + showOption(-6) + '">' + showOption(-6) + '</option>';
+        option += '<option value="' + showOption(-7) + '">' + showOption(-7) + '</option>';
+        $("#selectTime").html(option);
 
-        });
+
+        $("#selectTime option[value='{{selecttime}}']").attr("selected", true)
+        //$("#select_id option[text='jQuery']").attr("selected", true); //设置Select的Text值为jQuery的项选中 
+
+
+
+    });
+    function showOption(day) {//获取时间格式2014-11-01
+        var dd = new Date();
+        dd.setDate(dd.getDate() + day); //获取AddDayCount天后的日期    
+        var y = dd.getFullYear();
+        // var m = dd.getMonth() + 1; //获取当前月份的日期   
+        var m = ((dd.getMonth() + 1) < 10 ? "0" : "") + (dd.getMonth() + 1)
+        //var d = dd.getDate();
+        var d = (dd.getDate() < 10 ? "0" : "") + dd.getDate()
+        var s = y + "-" + m + "-" + d;
+        return s
+
     }
+    function setTime(){
+       var datetime = $("#selectTime").val();
+        
+      location.href = '/manager/reportbytime/'+datetime+'/';
+
+    }
+    
+
 </script>
+<style type="text/css">
+  a:link {
+   text-decoration: none;
+  }
+  a:visited {
+   text-decoration: none;
+  }
+  a:hover {
+   text-decoration: none;
+  }
+  a:active {
+   text-decoration: none;
+  }
+  .btn-primary {
+  color: #fff;
+  background-color: #878787;
+  border-color: #878787;
+  }
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #878787;
+border-color: #878787;
+}
 
-
+</style>

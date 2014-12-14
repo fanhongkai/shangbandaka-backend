@@ -87,7 +87,7 @@
 
           <h2 class="sub-header">
             <label id="text"></label>
-            <select style='float:right' Id = "selectTime">              
+            <select style="float:right" onchange="setTime()" Id = "selectTime">              
             </select>
           </h2>
           <div class="table-responsive">
@@ -224,6 +224,12 @@
               });
 
           });
+
+    }
+    function setTime(){
+       var datetime = $("#selectTime").val();
+        $("#time").val(datetime);
+        location.href = '/manager/reportbytime/'+datetime+'/';
 
     }
 

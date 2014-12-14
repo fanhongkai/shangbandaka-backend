@@ -80,7 +80,7 @@
                   <br />
                   <div>
                       <input type="submit" class="btn btn-primary" name="submit" id="but_save"value="批准"/>&nbsp
-                      <input type="submit" class="btn btn-primary" name="submit" id="but_save" onclick="return check()" value="驳回"/>&nbsp
+                      <input type="submit" class="btn btn-primary" name="reject" id="but_reject" onclick="return check()" value="驳回"/>&nbsp
 
                       <button type="reset" class="btn btn-primary" name="cancel" onclick="javascript:history.back()">取&nbsp 消</button>&nbsp
                   </div>
